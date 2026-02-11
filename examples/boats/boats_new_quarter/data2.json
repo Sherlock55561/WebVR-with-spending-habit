@@ -1,0 +1,120 @@
+[ 
+    {
+        "uid": "001",
+        "width": "5",
+        "height": "1",
+        "depth": "5"
+    },
+    {
+        "uid": "003",
+        "width": "5",
+        "height": "1",
+        "depth": "5"
+    },
+    {
+        "uid": "004",
+        "width": "2",
+        "height": "1",
+        "depth": "2"
+    },
+    {
+        "uid": "005",
+        "width": "3",
+        "height": "1",
+        "depth": "3"
+    },
+    {
+        "uid": "006",
+        "width": "3",
+        "height": "1",
+        "depth": "3"
+    },
+    {
+        "uid": "007",
+        "width": "5",
+        "height": "1",
+        "depth": "5"
+    },
+    {
+        "uid": "008",
+        "width": "3",
+        "height": "1",
+        "depth": "3"
+    },
+    {
+        "uid": "009",
+        "width": "5",
+        "height": "1",
+        "depth": "5"
+    },
+    {
+        "uid": "010",
+        "width": "5",
+        "height": "1",
+        "depth": "5"
+    },
+    {
+        "uid": "011",
+        "width": "3",
+        "height": "1",
+        "depth": "3"
+    },
+    {
+        "uid": "012",
+        "width": "3",
+        "height": "1",
+        "depth": "3"
+    },
+    {
+        "uid": "013",
+        "width": "5",
+        "height": "1",
+        "depth": "5"
+    },
+    {
+        "uid": "014",
+        "width": "3",
+        "height": "1",
+        "depth": "3"
+    },
+    {
+        "uid": "015",
+        "width": "5",
+        "height": "1",
+        "depth": "5"
+    },
+    {
+        "uid": "/barrio",
+        "children": [
+            {
+                "uid": "/barrio/002",
+                "width": "4",
+                "height": "1",
+                "depth": "4"
+            },
+            {
+                "uid": "/barrio/003",
+                "children": [
+                    {
+                        "uid": "barrio/003/block1",
+                        "width": "5",
+                        "height": "2",
+                        "depth": "5"
+                    },
+                    {
+                        "uid": "barrio/003/block2",
+                        "width": "3",
+                        "height": "1",
+                        "depth": "3"
+                    }
+                ]
+            },
+            {
+                "uid": "/barrio/004",
+                "width": "3",
+                "height": "1",
+                "depth": "3"
+            }
+        ]
+    }
+]

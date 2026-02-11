@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>A-Frame Data visualization Components</title>
+  <meta name="description" content="A Data visualization components for A-Frame.">
+  </meta>
+  <style>
+    html {
+      background: #33425B;
+      color: #FAFAFA;
+      font-family: monospace;
+      font-size: 20px;
+      padding: 10px 20px;
+    }
+
+    h1 {
+      font-weight: 300;
+    }
+
+    a {
+      color: #FAFAFA;
+      display: block;
+      padding: 15px 0;
+      background-position: center;
+    }
+
+    img {
+      max-width: 320px;
+    }
+
+    ul {
+      display: flex;
+      list-style: none;
+      flex-wrap: wrap;
+      padding: 5px 0 0;
+    }
+
+    ul li {
+      margin-right: 30px;
+      padding: 5px 0 30px;
+    }
+
+    ul a {
+      background-size: cover;
+      display: block;
+      padding: 0;
+      height: 320px;
+      width: 320px;
+    }
+
+    ul h3,
+    ul p {
+      max-width: 320px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>A-Frame Babia Components</h1>
+
+  <h2>Dashboards</h2>
+  <ul>
+    <li>
+      <a href="examples/demos/1.0.7/"
+        style="background-image: url(tests/screenshots/other_snapshots.js/demo_1.0.7.png)"></a>
+      <h3>COVID-19 data into charts</h3>
+    </li>
+    <li>
+      <a href="examples/demos/1.0.11/index.html"
+        style="background-image: url(tests/screenshots/other_snapshots.js/demo_1.0.11.png)"></a>
+      <h3>Charts Gallery / Museum metaphor</h3>
+    </li>
+  </ul>
+
+  <h2>City Component (Treemap algorithim for buildings/quarters)</h2>
+  <!-- <ul>
+    <li>
+      <a href="examples/codecityjs/perceval/"
+        style="background-image: url(tests/screenshots/codecity.js/codecity_perceval.png)"></a>
+      <h3>Perceval</h3>
+      <p>Perceval project analized week by week</p>
+    </li>
+    <li>
+      <a href="examples/codecityjs/sortinghat/"
+        style="background-image: url(tests/screenshots/codecity.js/codecity_sortinghat.png)"></a>
+      <h3>Sortinghat</h3>
+      <p>Sortinghat project analized week by week</p>
+    </li>
+    <li>
+      <a href="examples/codecityjs/sortinghat/indexcolor.html"
+        style="background-image: url(tests/screenshots/codecity.js/codecity_sortinghat.png)"></a>
+      <h3>Sortinghat (with color)</h3>
+      <p>Sortinghat project analized week by week using colors</p>
+    </li>
+  </ul> -->
+  <ul>
+    <li>
+      <a href="examples/codecityjs/basic/"
+        style="background-image: url(tests/screenshots/codecity.js/codecity_basic.png)"></a>
+      <h3>Basic</h3>
+    </li>
+    <li>
+      <a href="examples/codecityjs/basic_treegenerator/"
+        style="background-image: url(tests/screenshots/codecity.js/codecity_basic.png)"></a>
+      <h3>Basic (querier, treegenerator)</h3>
+    </li>
+  </ul>
+
+  <h2> Boats Component (Spiral algorithim for buildings/quarters)</h2>
+
+  <ul>
+    <!-- <li>
+      <a href="examples/boats/boats/" style="background-image: url(tests/screenshots/other_snapshots.js/boats.png)"></a>
+      <h3>babia-boats</h3>
+    </li>
+    <li>
+      <a href="examples/boats/boats_plan_view/"
+        style="background-image: url(tests/screenshots/other_snapshots.js/boats_plan_view.png)"></a>
+      <h3>babia-boats (Plan View)</h3>
+    </li> -->
+    <li>
+      <a href="examples/boats/boats2/"
+        style="background-image: url(tests/screenshots/other_snapshots.js/boats2.png)"></a>
+      <h3>Boats</h3>
+    </li>
+    <li>
+      <a href="examples/boats/boats_plan_view2/"
+        style="background-image: url(tests/screenshots/other_snapshots.js/boats_plan_view2.png)"></a>
+      <h3>Boats (Plan View)</h3>
+    </li>
+
+    <li>
+      <a href="examples/boats/boats_temporal/"
+        style="background-image: url(tests/screenshots/other_snapshots.js/boats_temporal.png)"></a>
+      <h3>Boats moving when adding/removing</h3>
+    </li>
+    <li>
+      <a href="examples/boats/boats_treegenerator/"
+        style="background-image: url(tests/screenshots/other_snapshots.js/boats_treegenerator.png)"></a>
+      <h3>Boats (querier, treebuilder)</h3>
+    </li>
+  </ul>
+  <!-- <a href="examples/selector_boats/"><h3>babia-boats with selector component (Front View)</h3></a>
+  <a href="examples/selector_boats/index2.html"><h3>babia-boats with selector component (Up View)</h3></a>
+  <a href="examples/selector_boats/jetuml.html"><h3>babia-boats with selector component and JetUML data</h3></a>
+  <a href="examples/selector_boats/jetumltest.html"><h3>babia-boats with selector component and JetUML data (Front view)</h3></a>
+
+  <a href="examples/multi_boats/only_queryjson.html">
+    <h3>Multiuser Time Evolution with Babia-Boats, queryjson and boats together 1.</h3>
+    <p>Entity containing babia-boats and babia-queryjson is shared. Evolution starts when new user joins.</p>
+  </a>
+  <a href="examples/multi_boats/only_queryjson2.html">
+    <h3>Multiuser Time Evolution with Babia-Boats, queryjson and boats together 2.</h3>
+    <p>Entity containing babia-boats and babia-queryjson is shared. Evolution starts when first user enters.</p>
+  </a>
+  <a href="examples/multi_boats/only_queryjson3.html">
+    <h3>Multiuser Time Evolution with Babia-Boats, queryjson and boats in different entities. </h3>
+    <p>Only babia-queryjson is shared. Evolution starts when first user enters.</p>
+  </a>
+  <a href="examples/multi_boats/queryjson_treebuilder.html">
+    <h3>Multiuser Time Evolution with Babia-Boats, queryjson, treebuilder and boats in different entities.</h3>
+    <p>Only babia-queryjson is shared. Evolution starts when first user enters.</p>
+  </a>
+
+
+  <a href="examples/multi_boats/index_multi_boats.html"><h3>babia-boats multiuser JetUML 2021</h3></a>
+  <a href="examples/multi_boats/with_selector.html"><h3>babia-boats multiuser with selector component</h3></a>
+  <a href="examples/multi_boats/jetuml.html"><h3>babia-boats multiuser with selector component and JetUML data</h3></a>
+  <a href="examples/multi_boats/jetuml_evolution_experiment.html"><h3>A Multiuser Room with babia-boats with selector component and JetUML data (INCLUDE NEW BABIA-CAMERA)</h3></a>
+  
+  <a href="examples/boats/">
+    <h4>More examples of babia-boats here</h4>
+  </a> -->
+
+
+
+
+  <h2>Real projects w/ treemap and spiral</h2>
+  <ul>
+    <li>
+      <a href="examples/codecityjs/argouml/"
+        style="background-image: url(https://thesis-dlumbrer.gitlab.io/usistay/images/argouml.gif)"></a>
+      <h3>ArgoUML</h3>
+      <p>City and Boat</p>
+    </li>
+    <li>
+      <a href="examples/codecityjs/perceval2021/"
+        style="background-image: url(https://thesis-dlumbrer.gitlab.io/usistay/images/perceval_2021.gif)"></a>
+      <h3>Perceval</h3>
+      <p>City and Boat</p>
+    </li>
+    <li>
+      <a href="examples/boats/boats_city_plan_view/"
+        style="background-image: url(tests/screenshots/other_snapshots.js/boats_city_plan_view.png)"></a>
+      <h3>Perceval on dessert (Plan View)</h3>
+      <p>City and Boats</p>
+    </li>
+    <li>
+      <a href="examples/boats/boats_city/"
+        style="background-image: url(tests/screenshots/other_snapshots.js/boats_city.png)"></a>
+      <h3>Perceval on dessert</h3>
+      <p>City and Boats</p>
+    </li>
+  </ul>
+
+  <h2>Temporal Evolution (Work in Progress)</h2>
+  <ul>
+    <li>
+      <a href="examples/boats/jetuml_evol/"
+        style="background-image: url(examples/img/time.png)"></a>
+      <h3>JetUML city evolution</h3>
+    </li>
+  </ul>
+
+  <!-- <ul>
+    <li>
+      <a href="examples/codecityjs/time_evolution_angular/"
+        style="background-image: url(tests/screenshots/codecity.js/codecity_time_evolution_angular.png)"></a>
+      <h3>Time_Evolution of Angular (DEPRECATED)</h3>
+    </li>
+  </ul> -->
+  <!-- 
+  <h2>Experiment scenes</h2>
+  <ul>
+    <li>
+      <a href="examples/codecityjs/projects_analysis/experiment_interface.html">
+        <h3>Experiment on screen - Task 0, 1, 2, 3, </h3>
+      </a>
+    </li>
+    <li>
+      <a href="examples/codecityjs/projects_analysis/experiment_interface_task5.html">
+        <h3>Experiment on screen - Task 5, 6 </h3>
+      </a>
+    </li>
+  </ul>
+  <ul>
+    <li>
+      <a href="examples/codecityjs/projects_analysis/experiment_interface_vr_2021.html">
+        <h3>Experiment on VR - Task 0, 1, 2, 3, 4</h3>
+      </a>
+    </li>
+    <li>
+      <a href="examples/codecityjs/projects_analysis/experiment_interface_vr_task5.html">
+        <h3>Experiment on VR - Task 5, 6</h3>
+      </a>
+    </li>
+  </ul> -->
+
+  <!-- <h2>Projects analysis in different scenes</h2>
+  <ul>
+    <li>
+      <a href="examples/codecityjs/projects_analysis/perceval_table.html">
+        <h3>Perceval table</h3>
+      </a>
+
+    </li>
+    <li>
+      <a href="examples/codecityjs/projects_analysis/argouml_table.html">
+        <h3>ArgoUML table</h3>
+      </a>
+    </li>
+    <li>
+      <a href="examples/codecityjs/projects_analysis/argouml_numfuns.html">
+        <h3>ArgoUML</h3>
+        <p>Analyzing num_funs as area</p>
+      </a>
+    </li>
+    <li>
+      <a href="examples/codecityjs/projects_analysis/argouml_tokens.html">
+        <h3>ArgoUML</h3>
+        <p>Analyzing tokens as area</p>
+      </a>
+    </li>
+    <li>
+      <a href="examples/codecityjs/projects_analysis/experiment_interface.html">
+        <h3>Experiment scene</h3>
+      </a>
+    </li>
+  </ul>
+  <ul>
+    <li>
+      <a href="examples/codecityjs/projects_analysis/perceval_landscape.html">
+        <h3>Perceval landscape</h3>
+      </a>
+
+    </li>
+    <li>
+      <a href="examples/codecityjs/projects_analysis/argouml_landscape.html">
+        <h3>ArgoUML landscape</h3>
+      </a>
+    </li>
+  </ul> -->
+
+
+
+  <h2>Charts</h2>
+  <ul>
+    <li>
+      <a href="examples/charts/pie/" style="background-image: url(tests/screenshots/pie.js/pie.png)"></a>
+      <h3>Babia Pie</h3>
+    </li>
+    <li>
+      <a href="examples/charts/doughnut/" style="background-image: url(tests/screenshots/doughnut.js/doughnut.png)"></a>
+      <h3>Babia Doughnut</h3>
+    </li>
+    <li>
+      <a href="examples/charts/bars/" style="background-image: url(tests/screenshots/bars.js/bars.png)"></a>
+      <h3>Bars chart</h3>
+    </li>
+    <li>
+      <a href="examples/charts/bars/bars_change.html"
+        style="background-image: url(tests/screenshots/bars.js/bars.png)"></a>
+      <h3>Bars chart changing</h3>
+    </li>
+    <li>
+      <a href="examples/charts/bars/bars_json.html"
+        style="background-image: url(tests/screenshots/bars.js/bars.png)"></a>
+      <h3>Bars chart changing (JSON files)</h3>
+    </li>
+    <li>
+      <a href="examples/charts/barsmap/" style="background-image: url(tests/screenshots/barsmap.js/barsmap.png)"></a>
+      <h3>Babia Barsmap</h3>
+    </li>
+    <li>
+      <a href="examples/charts/cyls/" style="background-image: url(tests/screenshots/cyls.js/cyls.png)"></a>
+      <h3>Babia Cyls</h3>
+    </li>
+    <li>
+      <a href="examples/charts/cylsmap/" style="background-image: url(tests/screenshots/cylsmap.js/cylsmap.png)"></a>
+      <h3>Babia Cylsmap</h3>
+    </li>
+    <li>
+      <a href="examples/charts/bubbles/" style="background-image: url(tests/screenshots/bubbles.js/bubbles.png)"></a>
+      <h3>Babia Bubbles</h3>
+    </li>
+    <li>
+      <a href="examples/charts/multichart/"
+        style="background-image: url(tests/screenshots/other_snapshots.js/multichart.png)"></a>
+      <h3>Multiple charts</h3>
+      <p>Mixing of different type of charts</p>
+    </li>
+    <li>
+      <a href="examples/charts/network_chart/network_chart.html"
+        style="background-image: url(tests/screenshots/network.js/network_chart.png)"></a>
+      <h3>Babia Network with 20 nodes and 36 links</h3>
+    </li>
+    <li>
+      <a href="examples/charts/network_chart/network_random_chart.html"
+        style="background-image: url(tests/screenshots/network.js/network_random_chart.png)"></a>
+      <h3>Babia Network with 1500 random nodes and up to 1500 random links </h3>
+    </li>
+  </ul>
+
+  <h2>Terrain Examples</h2>
+  <ul>
+    <li>
+      <a href="examples/elevation/elevation basic/"
+        style="background-image: url(tests/screenshots/terrain.js/elevation_basic.png)"></a>
+      <h3>Terrain Elevation</h3>
+    </li>
+    <li>
+      <a href="examples/elevation/elevation filled/"
+        style="background-image: url(tests/screenshots/terrain.js/elevation_filled.png)"></a>
+      <h3>Terrain Elevation Filled</h3>
+    </li>
+    <li>
+      <a href="examples/demos/map-terrain/index.html"
+        style="background-image: url(tests/screenshots/other_snapshots.js/singular.png)"></a>
+      <h3>Map Terrain</h3>
+    </li>
+    <li>
+      <a href="examples/demos/map-terrain/index_gallery.html"
+        style="background-image: url(tests/screenshots/other_snapshots.js/terrain-vr-scenario.png)"></a>
+      <h3>Map Terrain Gallery</h3>
+    </li>
+    <li>
+      <a href="examples/demos/map-terrain/pyramids.html"
+        style="background-image: url(tests/screenshots/other_snapshots.js/pyramids.png)"></a>
+      <h3>Map Terrain in Egypt</h3>
+    </li>
+  </ul>
+
+  <h2>Visualizers with query/filter</h2>
+  <ul>
+    <li>
+      <a href="examples/charts_querier/pie_querier/"
+        style="background-image: url(tests/screenshots/pie.js/pie_querier.png)"></a>
+      <h3>Babia Pie</h3>
+    </li>
+    <li>
+      <a href="examples/charts_querier/doughnut_querier/"
+        style="background-image: url(tests/screenshots/doughnut.js/doughnut_querier.png)"></a>
+      <h3>Babia Doughnut</h3>
+    </li>
+    <li>
+      <a href="examples/charts_querier/bars_querier/"
+        style="background-image: url(tests/screenshots/bars.js/bars_querier.png)"></a>
+      <h3>Bars chart</h3>
+    </li>
+    <li>
+      <a href="examples/charts_querier/bars_querier/index_csv.html"
+        style="background-image: url(tests/screenshots/bars.js/bars_querier.png)"></a>
+      <h3>Bars chart (csv)</h3>
+    </li>
+    <!-- <li>
+      <a href="examples/charts_querier/bars_querier/bars_axis_name.html"
+        style="background-image: url(tests/screenshots/bars.js/bars_axis_name.png)"></a>
+      <h3>Babia Bars chart with names on axis</h3>
+    </li> -->
+    <li>
+      <a href="examples/charts_querier/barsmap_querier/"
+        style="background-image: url(tests/screenshots/barsmap.js/barsmap_querier.png)"></a>
+      <h3>Babia Barsmap</h3>
+    </li>
+    <!-- <li>
+      <a href="examples/charts_querier/barsmap_querier/barsmap_axis_name.html"
+        style="background-image: url(tests/screenshots/barsmap.js/barsmap_axis_name.png)"></a>
+      <h3>Babia Barsmap chart with names on axis</h3>
+    </li> -->
+    <li>
+      <a href="examples/charts_querier/cyls_querier/"
+        style="background-image: url(tests/screenshots/cyls.js/cyls_querier.png)"></a>
+      <h3>Babia Cyls</h3>
+    </li>
+    <li>
+      <a href="examples/charts_querier/cylsmap_querier/"
+        style="background-image: url(tests/screenshots/cylsmap.js/cylsmap_querier.png)"></a>
+      <h3>Babia Cylsmap</h3>
+    </li>
+    <li>
+      <a href="examples/charts_querier/bubbles_querier/"
+        style="background-image: url(tests/screenshots/bubbles.js/bubbles_querier.png)"></a>
+      <h3>Babia Bubbles</h3>
+    </li>
+    <li>
+      <a href="examples/charts_querier/multichart_querier/"
+        style="background-image: url(tests/screenshots/queryjson.js/multichart_querier.png)"></a>
+      <h3>Multiple charts</h3>
+      <p>Mixing of different type of charts</p>
+    </li>
+  </ul>
+  <h2> UI Component </h2>
+  <ul>
+    <li>
+      <a href="examples/ui/pie/" style="background-image: url(tests/screenshots/ui.js/ui_pie.png)"></a>
+      <h3>Babia-pie with UI component.</h3>
+    </li>
+    <li>
+      <a href="examples/ui/bars/" style="background-image: url(tests/screenshots/ui.js/ui_bars.png)"></a>
+      <h3>babia-bars with UI component.</h3>
+    </li>
+    <li>
+      <a href="examples/ui/cylsmap/" style="background-image: url(tests/screenshots/ui.js/ui_cylsmap.png)"></a>
+      <h3>babia-cylsmap with UI component.</h3>
+    </li>
+    <li>
+      <a href="examples/ui/city_treegenerator/"
+        style="background-image: url(tests/screenshots/ui.js/ui_city_treegenerator.png)"></a>
+      <h3>babia-city with UI component.</h3>
+      <p>with Tree Generator</p>
+    </li>
+    <li>
+      <a href="examples/ui/boats_treegenerator/"
+        style="background-image: url(tests/screenshots/ui.js/ui_boats_treegenerator.png)"></a>
+      <h3>babia-boats with UI component.</h3>
+      <p>with Tree Generator</p>
+    </li>
+    <li>
+      <a href="examples/ui/ui_treegenerator/"
+        style="background-image: url(tests/screenshots/ui.js/ui_ui_treegenerator.png)"></a>
+      <h3>babia-city and babia-boats with UI component.</h3>
+      <p>with Tree Generator</p>
+    </li>
+    <li>
+      <a href="examples/ui/barsmap/" style="background-image: url(tests/screenshots/ui.js/ui_barsmap.png)"></a>
+      <h3>babia-barsmap with UI component.</h3>
+      <p>with several datafiles</p>
+    </li>
+    <!-- <li>
+      <a href="examples/ui/oculus/" style="background-image: url(tests/screenshots/ui.js/oculus.jpg)"></a>
+      <h3>babia-babia with UI component.</h3>
+      <p>using Oculus Quest</p>
+    </li> -->
+  </ul>
+  <!-- <a href="examples/ui/link">
+    <h3>4 babia-bars 1 UI Component with babia-ui-link</h3>
+  </a> -->
+
+  <h2>Performance Examples</h2>
+  <ul>
+    <li>
+      <a href="examples/performance/500bars_anime/"
+        style="background-image: url(tests/screenshots/other_snapshots.js/500bars_anime.png)"></a>
+      <h3>Test barsmap with 500 bars animated</h3>
+      <p>(with stats)</p>
+    </li>
+    <li>
+      <a href="examples/performance/500bars_100anime/"
+        style="background-image: url(tests/screenshots/other_snapshots.js/500bars_100anime.png)"></a>
+      <h3>Test barsmap with 500 bars (100 animated)</h3>
+      <p>(with stats)</p>
+    </li>
+    <li>
+      <a href="examples/performance/500simplebars_100anime/"
+        style="background-image: url(tests/screenshots/other_snapshots.js/500simplebars_100anime.png)"></a>
+      <h3>Test simplebarchart with 500 bars (100 animated)</h3>
+      <p>(with stats)</p>
+    </li>
+  </ul>
+
+  <!-- <a href="examples/temporal_evol/bars/">
+    <h3>Evolution Temporal using babia-bars</h3>
+  </a>
+  <a href="examples/temporal_evol/barsmap/">
+    <h3>Evolution Temporal using babia-barsmap</h3>
+  </a>
+  <a href="examples/selector/">
+    <h3>Selector component</h3>
+  </a>
+  <a href="examples/timeline/index2.html">
+    <h3>Slider Component</h3>
+  </a>
+  <a href="examples/timeline/">
+    <h3>Timeline with Bars Component</h3>
+  </a>
+  <a href="examples/timeline/index3.html">
+    <h3>Timeline with Multiple Bars Components</h3>
+  </a>
+  <h2>Watchers</h2>
+  <a href="examples/watcher/querier_watcher/index.html">
+    <h3>Querier Watcher</h3>
+  </a>
+  <h2>Multiuser</h2>
+  <a href="examples/multiuser/simple_examples.html">
+    <h3>Multiuser simple demos</h3>
+  </a>
+  <a href="examples/multiuser/complex_examples.html">
+    <h3>Multiuser complex demos</h3>
+  </a>
+  <a href="examples/multiuser/choose_avatar/index.html">
+    <h3>Multiuser with avatars</h3>
+  </a>
+  <a href="examples/multi_bars/index.html">
+    <h3>Multiuser Time Evolution with Babia-Bars</h3>
+  </a>
+  <a href="examples/multi_bars/index1.html">
+    <h3>Multiuser Time Evolution with Babia-Bars, separate queryjson from bars</h3>
+  </a>
+  <a href="examples/multi_bars/index2.html">
+    <h3>Multiuser Time Evolution with Babia-Bars, queryjson, filter and bars together</h3>
+  </a>
+  <a href="examples/multi_bars/index3.html">
+    <h3>Multiuser Time Evolution with Babia-Bars, separate queryjson, filter and bars. Not sharing bars</h3>
+  </a>
+
+  <h2>NotiBuffer</h2>
+  <a href="examples/async/index_noti_buffer.html">
+    <h3>NotiBuffer with QueryJson and Babia-Bars</h3>
+  </a>
+  <a href="examples/async/index_noti_buffer_filter.html">
+    <h3>NotiBuffer with QueryJson, Filter and Babia-Bars</h3>
+  </a> -->
+
+  <h2>Augmented Reality (AR)</h2>
+  <ul>
+    <li>
+      <a href="examples/ar/multichart/"
+        style="background-image: url(tests/screenshots/other_snapshots.js/multichart.png)"></a>
+      <h3>Multicharts</h3>
+      <p>Tested on Meta Quest 3</p>
+    </li>
+    <li>
+      <a href="examples/boats/jetuml_evol/ar.html"
+        style="background-image: url(examples/img/time.png)"></a>
+      <h3>JetUML evolution</h3>
+      <p>Tested on Meta Quest 3</p>
+    </li>
+  </ul>
+
+  <h2>Scientific Publications</h2>
+  <ul>
+    <li>
+      <a href="examples/publications/codecityvs/"
+        style="background-image: url(examples/img/codecityvs.png)"></a>
+      <h3>Codecity of JetUML for comparing On-Screen and VR - 2nd experiment</h3>
+      <p>IST and VISSOFT 2021</p>
+    </li>
+    <li>
+      <a href="examples/boats/jetuml_evol/"
+        style="background-image: url(examples/img/time.png)"></a>
+      <h3>Time evolution JetUML</h3>
+      <p>Sattose 2023 and Benevol 2023</p>
+    </li>
+    <li>
+      <a href="examples/publications/dashboard/"
+        style="background-image: url(examples/img/dashboard.png)"></a>
+      <h3>Dashboard (static version) of CHAOSS data in shelves</h3>
+      <p>EMSE</p>
+    </li>
+    <li>
+      <a href="examples/publications/elevated/"
+        style="background-image: url(examples/img/elevatedcity.png)"></a>
+      <h3>Elevated city for representing dependencies ecosystem</h3>
+      <p>VISSOFT 2023</p>
+    </li>
+    <li>
+      <a href="examples/experiment/city.html"
+        style="background-image: url(examples/img/experiment.png)"></a>
+      <h3>Facilitating experiments of Dataviz in VR</h3>
+      <p>SoftwareX</p>
+    </li>
+  </ul>
+
+  <style>
+    .gitlab-corner-wrapper {
+      overflow: hidden;
+      width: 150px;
+      height: 150px;
+      position: absolute !important;
+      top: 0;
+      right: 0
+    }
+
+    .gitlab-corner {
+      position: absolute;
+      top: -30px;
+      right: -65px;
+      transform: rotate(45deg);
+      background: #548;
+      border: 60px solid #548;
+      border-bottom: none;
+      border-top: #548 solid 16px
+    }
+
+    .gitlab-corner svg {
+      width: 60px;
+      height: 60px;
+      margin-bottom: -4px
+    }
+
+    .cls-1 {
+      fill: #fc6d26
+    }
+
+    .cls-2 {
+      fill: #e24329
+    }
+
+    .cls-3 {
+      fill: #fca326
+    }
+
+    .gitlab-corner:hover .cls-1 {
+      animation: cycle .6s
+    }
+
+    .gitlab-corner:hover .cls-2 {
+      animation: cycleMid .6s
+    }
+
+    .gitlab-corner:hover .cls-3 {
+      animation: cycleEnd .6s
+    }
+
+    @keyframes cycle {
+
+      100%,
+      15%,
+      60% {
+        fill: #fc6d26
+      }
+
+      30%,
+      75% {
+        fill: #e24329
+      }
+
+      45%,
+      90% {
+        fill: #fca326
+      }
+    }
+
+    @keyframes cycleMid {
+
+      100%,
+      15%,
+      60% {
+        fill: #e24329
+      }
+
+      30%,
+      75% {
+        fill: #fca326
+      }
+
+      45%,
+      90% {
+        fill: #fc6d26
+      }
+    }
+
+    @keyframes cycleEnd {
+
+      100%,
+      15%,
+      60% {
+        fill: #fca326
+      }
+
+      30%,
+      75% {
+        fill: #fc6d26
+      }
+
+      45%,
+      90% {
+        fill: #e24329
+      }
+    }
+
+    @media (max-width:500px) {
+
+      .gitlab-corner:hover .cls-1,
+      .gitlab-corner:hover .cls-2,
+      .gitlab-corner:hover .cls-3 {
+        animation: none
+      }
+
+      .gitlab-corner .cls-1 {
+        animation: cycle .6s
+      }
+
+      .gitlab-corner .cls-2 {
+        animation: cycleMid .6s
+      }
+
+      .gitlab-corner .cls-3 {
+        animation: cycleEnd .6s
+      }
+    }
+  </style>
+  <div class="gitlab-corner-wrapper"><a href="https://gitlab.com/babiaxr/aframe-babia-components" class="gitlab-corner"
+      aria-label="View source on GitLab"><svg id="logo_art" data-name="logo art" xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 586 559">
+        <g id="g44">
+          <path id="path46" class="cls-1"
+            d="M461.17,301.83l-18.91-58.12L404.84,128.43a6.47,6.47,0,0,0-12.27,0L355.15,243.64H230.82L193.4,128.43a6.46,6.46,0,0,0-12.26,0L143.78,243.64l-18.91,58.19a12.88,12.88,0,0,0,4.66,14.39L293,435,456.44,316.22a12.9,12.9,0,0,0,4.73-14.39" />
+        </g>
+        <g id="g48">
+          <path id="path50" class="cls-2" d="M293,434.91h0l62.16-191.28H230.87L293,434.91Z" />
+        </g>
+        <g id="g56">
+          <path id="path58" class="cls-1" d="M293,434.91,230.82,243.63h-87L293,434.91Z" />
+        </g>
+        <g id="g64">
+          <path id="path66" class="cls-3"
+            d="M143.75,243.69h0l-18.91,58.12a12.88,12.88,0,0,0,4.66,14.39L293,435,143.75,243.69Z" />
+        </g>
+        <g id="g72">
+          <path id="path74" class="cls-2" d="M143.78,243.69h87.11L193.4,128.49a6.47,6.47,0,0,0-12.27,0l-37.35,115.2Z" />
+        </g>
+        <g id="g76">
+          <path id="path78" class="cls-1" d="M293,434.91l62.16-191.28H442.3L293,434.91Z" />
+        </g>
+        <g id="g80">
+          <path id="path82" class="cls-3"
+            d="M442.24,243.69h0l18.91,58.12a12.85,12.85,0,0,1-4.66,14.39L293,434.91l149.2-191.22Z" />
+        </g>
+        <g id="g84">
+          <path id="path86" class="cls-2" d="M442.28,243.69h-87.1l37.42-115.2a6.46,6.46,0,0,1,12.26,0l37.42,115.2Z" />
+        </g>
+      </svg></a></div>
+</body>
+
+</html>
