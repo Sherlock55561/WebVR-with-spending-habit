@@ -264,11 +264,11 @@ let updateFunction = (self, oldData) => {
             self.slice_array = [];
         }
         // Unregister from old producer
-        if (self.prodComponent) {
+        if (self.prodComponent && self.prodComponent.notiBuffer) {
             self.prodComponent.notiBuffer.unregister(self.notiBufferId);
         };
         self.prodComponent = findProdComponent(data, el);
-        if (self.prodComponent.notiBuffer) {
+        if (self.prodComponent && self.prodComponent.notiBuffer) {
             self.notiBufferId = self.prodComponent.notiBuffer
                 .register(self.processData.bind(self));
         }

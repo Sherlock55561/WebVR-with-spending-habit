@@ -16,13 +16,16 @@ AFRAME.registerComponent('babia-points', {
         z: { type: 'string', default: 'z' },
         color: { type: 'string' },
         colorMode: { type: 'string', default: 'field' }, // field | pca
-        mode: { type: 'string', default: '' }, // '' | pca | gmm
+        mode: { type: 'string', default: '' }, // '' | pca | gmm | umap
         pcaX: { type: 'string', default: 'PCA1' },
         pcaY: { type: 'string', default: 'PCA2' },
         pcaZ: { type: 'string', default: 'PCA3' },
         gmmX: { type: 'string', default: 'GMM_Prob_0' },
         gmmY: { type: 'string', default: 'GMM_Prob_1' },
         gmmZ: { type: 'string', default: 'GMM_Prob_2' },
+        umapX: { type: 'string', default: 'UMAP1' },
+        umapY: { type: 'string', default: 'UMAP2' },
+        umapZ: { type: 'string', default: 'UMAP3' },
         pcaColors: { type: 'string', default: '#ff0000,#0000ff,#00ff00' },
         size: { type: 'number', default: 0.02 },
         opacity: { type: 'number', default: 1 },
@@ -175,6 +178,10 @@ AFRAME.registerComponent('babia-points', {
             xKey = data.gmmX || xKey;
             yKey = data.gmmY || yKey;
             zKey = data.gmmZ || zKey;
+        } else if (mode === 'umap') {
+            xKey = data.umapX || xKey;
+            yKey = data.umapY || yKey;
+            zKey = data.umapZ || zKey;
         }
         const cKey = data.color;
         this.activeKeys = { x: xKey, y: yKey, z: zKey, color: cKey, mode: mode };
@@ -1188,6 +1195,9 @@ AFRAME.registerComponent('babia-points-tooltip', {
         const fallbackFields = activeFields
             ? [activeFields.xKey, activeFields.yKey, activeFields.zKey, activeFields.cKey]
             : [babia.data.x, babia.data.y, babia.data.z, babia.data.color];
+        if (row && row.PersonID !== undefined && row.PersonID !== null) {
+            fallbackFields.unshift('PersonID');
+        }
         const keys = this.data.fields
             ? this.data.fields.split(',').map(s => s.trim()).filter(Boolean)
             : fallbackFields.filter(Boolean);

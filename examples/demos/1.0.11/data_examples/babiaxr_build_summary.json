@@ -1,0 +1,13 @@
+{
+  "input_path": "data.csv",
+  "output_dir": "examples/demos/1.0.11/data_examples",
+  "rows_all": 15939,
+  "dependents_groups": [
+    "1",
+    "2",
+    "3",
+    "4+"
+  ],
+  "kmeans_k": 4,
+  "gmm_components": 4
+}

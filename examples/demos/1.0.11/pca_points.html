@@ -6,6 +6,66 @@
 
     <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
     <script src="../../../dist/aframe-babia-components.js"></script>
+    <script>
+      AFRAME.registerComponent('babia-axis-label-sync', {
+        schema: {
+          target: { type: 'selector' },
+          xLabel: { type: 'selector' },
+          yLabel: { type: 'selector' },
+          zLabel: { type: 'selector' }
+        },
+        init: function () {
+          this.onComponentChanged = this.onComponentChanged.bind(this);
+          this.onTargetLoaded = this.onTargetLoaded.bind(this);
+          const target = this.data.target;
+          if (!target) return;
+          target.addEventListener('componentchanged', this.onComponentChanged);
+          target.addEventListener('loaded', this.onTargetLoaded);
+          this.updateLabels();
+          setTimeout(() => this.updateLabels(), 0);
+        },
+        remove: function () {
+          const target = this.data.target;
+          if (!target) return;
+          target.removeEventListener('componentchanged', this.onComponentChanged);
+          target.removeEventListener('loaded', this.onTargetLoaded);
+        },
+        onTargetLoaded: function () {
+          this.updateLabels();
+        },
+        onComponentChanged: function (evt) {
+          if (!evt || !evt.detail || evt.detail.name !== 'babia-points') return;
+          this.updateLabels();
+        },
+        updateLabels: function () {
+          const target = this.data.target;
+          if (!target) return;
+          const comp = target.components && target.components['babia-points'];
+          if (!comp || !comp.data) return;
+          const d = comp.data;
+          const mode = (d.mode || '').toLowerCase().trim();
+          let xKey = d.x;
+          let yKey = d.y;
+          let zKey = d.z;
+          if (mode === 'pca') {
+            xKey = d.pcaX || xKey;
+            yKey = d.pcaY || yKey;
+            zKey = d.pcaZ || zKey;
+          } else if (mode === 'gmm') {
+            xKey = d.gmmX || xKey;
+            yKey = d.gmmY || yKey;
+            zKey = d.gmmZ || zKey;
+          } else if (mode === 'umap') {
+            xKey = d.umapX || xKey;
+            yKey = d.umapY || yKey;
+            zKey = d.umapZ || zKey;
+          }
+          if (this.data.xLabel) this.data.xLabel.setAttribute('value', xKey || 'X');
+          if (this.data.yLabel) this.data.yLabel.setAttribute('value', yKey || 'Y');
+          if (this.data.zLabel) this.data.zLabel.setAttribute('value', zKey || 'Z');
+        }
+      });
+    </script>
   </head>
 
   <body>
@@ -25,13 +85,14 @@
       <a-entity id="dependents4" babia-querycsv="url: data_examples/babiaxr_dependents_4+.csv;"></a-entity>
 
       <a-entity id="pca-cloud" position="0 1.6 0">
+        <a-entity babia-axis-label-sync="target: #pca-points; xLabel: #axis-x-label; yLabel: #axis-y-label; zLabel: #axis-z-label"></a-entity>
         <a-entity id="pca-axes">
           <a-box width="2" height="0.01" depth="0.01" color="#666"></a-box>
           <a-box width="0.01" height="2" depth="0.01" color="#666"></a-box>
           <a-box width="0.01" height="0.01" depth="2" color="#666"></a-box>
-          <a-text value="PCA1" color="#333" width="1.5" position="1.1 0 0" babia-lookat="[camera]"></a-text>
-          <a-text value="PCA2" color="#333" width="1.5" position="0 1.1 0" babia-lookat="[camera]"></a-text>
-          <a-text value="PCA3" color="#333" width="1.5" position="0 0 1.1" babia-lookat="[camera]"></a-text>
+          <a-text id="axis-x-label" value="PCA1" color="#333" width="1.5" position="1.1 0 0" babia-lookat="[camera]"></a-text>
+          <a-text id="axis-y-label" value="PCA2" color="#333" width="1.5" position="0 1.1 0" babia-lookat="[camera]"></a-text>
+          <a-text id="axis-z-label" value="PCA3" color="#333" width="1.5" position="0 0 1.1" babia-lookat="[camera]"></a-text>
         </a-entity>
         <a-entity id="pca-points"
           babia-points="
@@ -46,6 +107,9 @@
             gmmX: GMM_Prob_0;
             gmmY: GMM_Prob_1;
             gmmZ: GMM_Prob_2;
+            umapX: UMAP1;
+            umapY: UMAP2;
+            umapZ: UMAP3;
             colorMode: pca;
             pcaColors: #ff0000,#0000ff,#00ff00;
             size: 0.012;
@@ -66,7 +130,7 @@
         position="1.72 1.25 -0.75"
         rotation="0 -28 0"
         scale="0.125 0.125 0.125"
-        babia-ui="target: pca-points; customQuerierLabel: Dependents; hideRows: x,y,z,color; maxPerRow: 2; customAttributeSwitch: @Mode, mode:pca, mode:gmm, @Panel, pointsRay|babia-points-tooltip|panelMode:point, pointsRay|babia-points-tooltip|panelMode:camera; customAttributeLabel: mode:pca:PCA, mode:gmm:GMM, pointsRay|babia-points-tooltip|panelMode:point:Point, pointsRay|babia-points-tooltip|panelMode:camera:Camera;"
+        babia-ui="target: pca-points; customQuerierLabel: Dependents; hideRows: x,y,z,color; maxPerRow: 2; customAttributeSwitch: @Mode, mode:pca, mode:gmm, mode:umap, @Panel, pointsRay|babia-points-tooltip|panelMode:point, pointsRay|babia-points-tooltip|panelMode:camera; customAttributeLabel: mode:pca:PCA, mode:gmm:GMM, mode:umap:UMAP, pointsRay|babia-points-tooltip|panelMode:point:Point, pointsRay|babia-points-tooltip|panelMode:camera:Camera;"
         babia-lookat="[camera]">
       </a-entity>
 
@@ -75,7 +139,7 @@
           cursor="rayOrigin: mouse; fuse: false"
           raycaster="objects: .babia-points-target, .babiaxraycasterclass; near: 0.001; far: 100; interval: 0; recursive: true"
           babia-ray-line="color: #00bcd4; opacity: 0.7; showWhenNoHit: false; far: 100; space: camera"
-          babia-points-tooltip="width: 0.9; height: 0.45; textWidth: 0.95; textScale: 0.58; panelPointWidth: 0.42; panelPointHeight: 0.2; panelPointTextWidth: 0.42; panelPointTextScale: 0.28; panelCameraWidth: 0.95; panelCameraHeight: 0.48; panelCameraTextWidth: 0.98; panelCameraTextScale: 0.6; textAlign: center; textBaseline: center; textZOffset: 0.01; threshold: 0.03; fixedPosition: 0.25 0.2 -0.9; fixedRotation: 0 0 0; screenParent: scene; positionMode: hit; hitOffset: 0 0.03 0; faceCamera: true; highlight: true; highlightColor: #ffd54f; precision: 3; panelMode: point; panelCameraPos: -0.55 0.32 -0.9; focusMode: none;">
+          babia-points-tooltip="fields: PersonID,Occupation,City_Tier,Income,Age,Dependents,Savings_Rate_clip,Pressure_Index_clip,Cluster_KMeans,Cluster_GMM,PCA1,PCA2,PCA3,GMM_Prob_0,GMM_Prob_1,GMM_Prob_2,UMAP1,UMAP2,UMAP3; width: 0.9; height: 0.45; textWidth: 0.95; textScale: 0.58; panelPointWidth: 0.42; panelPointHeight: 0.2; panelPointTextWidth: 0.42; panelPointTextScale: 0.28; panelCameraWidth: 0.95; panelCameraHeight: 0.48; panelCameraTextWidth: 0.98; panelCameraTextScale: 0.6; textAlign: center; textBaseline: center; textZOffset: 0.01; threshold: 0.03; fixedPosition: 0.25 0.2 -0.9; fixedRotation: 0 0 0; screenParent: scene; positionMode: hit; hitOffset: 0 0.03 0; faceCamera: true; highlight: true; highlightColor: #ffd54f; precision: 3; panelMode: point; panelCameraPos: -0.55 0.32 -0.9; focusMode: none;">
           <a-entity geometry="primitive: ring; radiusInner: 0.004; radiusOuter: 0.006"
             material="color: #111; shader: flat; opacity: 0.9; depthTest: false; depthWrite: false"
             position="0 0 -0.1"

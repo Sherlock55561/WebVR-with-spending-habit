@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Condition: 2D + AI(ML)</title>
+  <link rel="stylesheet" href="./study-style.css">
+</head>
+<body>
+  <div class="layout">
+    <main>
+      <section class="panel" id="study-header"></section>
+
+      <section class="panel">
+        <h3>Group View: Heatmap</h3>
+        <p class="muted">Fixed color scale for all conditions. Darker means higher pressure.</p>
+        <div id="group-heatmap"></div>
+      </section>
+
+      <section class="panel">
+        <h3>Individual View: Scatter</h3>
+        <p class="muted">Click one point to fill <code>PersonID</code> in the task form.</p>
+        <div class="mode-controls">
+          <button type="button" class="point-mode active-mode" data-mode="pca">PCA</button>
+          <button type="button" class="point-mode" data-mode="umap">UMAP</button>
+        </div>
+        <div class="pressure-legend">
+          <span class="muted">Pressure color range:</span>
+          <span class="mono">min=<span id="pressure-min-label">-</span></span>
+          <span class="mono">max=<span id="pressure-max-label">-</span></span>
+        </div>
+        <canvas id="individual-scatter-canvas" width="880" height="440"></canvas>
+        <p id="individual-selected-info" class="mono">No point selected.</p>
+      </section>
+
+      <section id="study-tables"></section>
+      <section class="panel" id="study-ai-cards"></section>
+    </main>
+
+    <aside>
+      <section class="panel">
+        <h3>Answer Rules</h3>
+        <p class="muted">Heatmap: darker cell means higher mean pressure.</p>
+        <p class="muted">Heatmap row=City_Tier, col=Occupation; use it for group tasks.</p>
+        <p class="muted">Scatter: position = similarity space (PCA/UMAP), not direct pressure.</p>
+        <p class="muted">Scatter color: cyan(low) -> red(high) pressure; click one point for PersonID.</p>
+      </section>
+      <section class="panel">
+        <h3>Task Submission</h3>
+        <p class="muted">AI cards are enabled in this condition.</p>
+        <div id="study-tasks"></div>
+        <p id="study-status" class="mono"></p>
+      </section>
+      <section class="panel">
+        <h3>Scoring Help</h3>
+        <p id="score-help" class="mono"></p>
+      </section>
+      <section class="panel">
+        <a href="./index.html">Back To Launcher</a>
+      </section>
+    </aside>
+  </div>
+
+  <script src="./study-common.js"></script>
+  <script>
+    window.PressureStudy.init({
+      conditionId: "2d_ai_on",
+      showTables: false,
+      dataPath: "../1.0.11/data_examples/babiaxr_all_dependents_groups.csv"
+    });
+  </script>
+</body>
+</html>

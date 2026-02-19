@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Condition: VR + No AI</title>
+  <link rel="stylesheet" href="./study-style.css">
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+  <script src="../../../dist/aframe-babia-components.js"></script>
+</head>
+<body>
+  <div class="vr-shell">
+    <div class="scene-hint">
+      VR Mode: bubbles for group tasks + point cloud for individual diagnosis.<br>
+      Use mouse drag / WASD (desktop) or Enter VR (headset).
+    </div>
+
+    <div class="overlay">
+      <section class="panel" id="study-header"></section>
+      <section id="study-tables"></section>
+      <section class="panel" id="study-ai-cards"></section>
+      <section class="panel">
+        <h3>Answer Rules (Quick)</h3>
+        <p class="muted">Bubbles: same color = same Occupation (category).</p>
+        <p class="muted">Bubbles: higher/taller/larger = higher pressure.</p>
+        <p class="muted">Point cloud: 3D position = similarity space (PCA/UMAP), not pressure itself.</p>
+        <p class="muted">Point color: cyan(low) -> red(high) pressure; use point cloud for individual task.</p>
+        <div class="pressure-legend">
+          <span class="muted">Point-cloud pressure range:</span>
+          <span class="mono">min=<span id="pressure-min-label">-</span></span>
+          <span class="mono">max=<span id="pressure-max-label">-</span></span>
+        </div>
+        <div class="mode-controls">
+          <button type="button" class="point-mode active-mode" data-mode="pca">PCA</button>
+          <button type="button" class="point-mode" data-mode="umap">UMAP</button>
+        </div>
+      </section>
+      <section class="panel">
+        <h3>Task Submission</h3>
+        <div id="study-tasks"></div>
+        <p id="study-status" class="mono"></p>
+      </section>
+      <section class="panel">
+        <h3>Scoring Help</h3>
+        <p id="score-help" class="mono"></p>
+        <a href="./index.html">Back To Launcher</a>
+      </section>
+    </div>
+
+    <a-scene background="color: #0f141b">
+      <a-light type="ambient" intensity="0.9" color="#f7f9ff"></a-light>
+      <a-light type="directional" intensity="0.9" color="#ffffff" position="2 3 1"></a-light>
+      <a-plane color="#131b26" rotation="-90 0 0" width="30" height="30"></a-plane>
+
+      <a-entity id="allData" babia-querycsv="url: ../1.0.11/data_examples/babiaxr_all_dependents_groups.csv;"></a-entity>
+
+      <a-entity id="bubble-cloud" position="-4.6 0.2 -8.4" rotation="0 18 0" scale="1.1 1.1 1.1">
+        <a-entity id="vr-bubble-chart"
+          babia-bubbles="
+            data: [];
+            x_axis: Occupation;
+            z_axis: City_Tier;
+            height: Pressure_Index_clip;
+            radius: Bubble_Radius;
+            axis: true;
+            axis_name: true;
+            legend: true;
+            heightMax: 1.8;
+            radiusMax: 0.22;
+            palette: categoric;
+            title: Group Bubble View;
+            titleColor: #f7f9ff;
+            titlePosition: 4.2 2.45 0;">
+        </a-entity>
+      </a-entity>
+
+      <a-entity id="point-cloud" position="2.1 1.7 -8.1">
+        <a-box width="2" height="0.01" depth="0.01" color="#6b7280"></a-box>
+        <a-box width="0.01" height="2" depth="0.01" color="#6b7280"></a-box>
+        <a-box width="0.01" height="0.01" depth="2" color="#6b7280"></a-box>
+        <a-text value="PointX" color="#e5e7eb" width="1.5" position="1.1 0 0" babia-lookat="[camera]"></a-text>
+        <a-text value="PointY" color="#e5e7eb" width="1.5" position="0 1.1 0" babia-lookat="[camera]"></a-text>
+        <a-text value="PointZ" color="#e5e7eb" width="1.5" position="0 0 1.1" babia-lookat="[camera]"></a-text>
+        <a-entity id="individual-points"
+          babia-points="
+            from: allData;
+            mode: pca;
+            pcaX: PCA1;
+            pcaY: PCA2;
+            pcaZ: PCA3;
+            umapX: UMAP1;
+            umapY: UMAP2;
+            umapZ: UMAP3;
+            color: Pressure_Index_clip;
+            colorMode: field;
+            colorMin: #06b6d4;
+            colorMax: #ef4444;
+            size: 0.0115;
+            box: 2;
+            center: true;
+            shape: sphere;
+            sphereSegments: 4;
+            sphereInstanced: true;">
+        </a-entity>
+      </a-entity>
+
+      <a-camera position="0 1.6 1.2" near="0.001" far="100" wasd-controls="acceleration: 20">
+        <a-entity id="vrRay"
+          cursor="rayOrigin: mouse; fuse: false"
+          raycaster="objects: .babiaxraycasterclass, .babia-points-target; near: 0.001; far: 100; interval: 0; recursive: true"
+          babia-ray-line="color: #00e5ff; opacity: 0.88; showWhenNoHit: false; far: 100; space: camera"
+          babia-points-tooltip="fields: PersonID,Occupation,City_Tier,Dependents_Group,Income,Age,Pressure_Index_clip,Savings_Rate_clip,PCA1,PCA2,PCA3,UMAP1,UMAP2,UMAP3; width: 0.95; height: 0.5; textWidth: 1; textScale: 0.58; precision: 3; panelMode: camera; panelCameraPos: -0.55 0.3 -0.9;">
+        </a-entity>
+      </a-camera>
+    </a-scene>
+  </div>
+
+  <script src="./study-common.js"></script>
+  <script>
+    window.PressureStudy.init({ conditionId: "vr_ai_off", showTables: false });
+  </script>
+</body>
+</html>

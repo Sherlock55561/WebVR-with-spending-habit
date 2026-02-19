@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pressure Study: 2D/VR x AI</title>
+  <link rel="stylesheet" href="./study-style.css">
+</head>
+<body>
+  <div class="layout" style="grid-template-columns: 1fr;">
+    <section class="panel">
+      <h1>Pressure Analysis Study Launcher</h1>
+      <p>
+        Objective: compare analytical performance across <strong>2D vs VR</strong> and
+        <strong>AI(ML) Off vs On</strong> while answering the same pressure-analysis tasks.
+      </p>
+      <div class="links">
+        <a href="./condition_2d_no_ai.html">Condition A: 2D + No AI</a>
+        <a href="./condition_2d_ai.html">Condition B: 2D + AI(ML)</a>
+      </div>
+      <div class="links">
+        <a href="./condition_vr_no_ai.html">Condition C: VR + No AI</a>
+        <a href="./condition_vr_ai.html">Condition D: VR + AI(ML)</a>
+      </div>
+      <p class="mono">Each condition saves one JSON log locally when participant submits answers.</p>
+      <p class="mono">Score command: python tools/research/pressure_study_scoring.py --study examples/demos/ai_vr_pressure/study_tasks.json --submission &lt;log.json&gt;</p>
+    </section>
+  </div>
+</body>
+</html>

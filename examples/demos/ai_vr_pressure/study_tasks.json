@@ -1,0 +1,242 @@
+{
+  "study_id": "pressure_ai_vr_v1",
+  "focus_metric": "Pressure_Index_clip",
+  "dataset_source": "Kaggle: indian-personal-finance-and-spending-habits (processed in this repository)",
+  "group_endpoint": {
+    "weight": 0.6,
+    "tasks": [
+      {
+        "id": "g1",
+        "type": "single_choice",
+        "weight": 1.5,
+        "prompt": "From the bubble view, which City_Tier has the highest overall pressure level?",
+        "options": [
+          "Tier_1",
+          "Tier_2",
+          "Tier_3"
+        ],
+        "correct_answer": "Tier_1"
+      },
+      {
+        "id": "g2",
+        "type": "single_choice",
+        "weight": 2.0,
+        "prompt": "Which City_Tier x Occupation segment has the highest mean pressure?",
+        "options": [
+          "Tier_1|Retired",
+          "Tier_1|Professional",
+          "Tier_2|Self_Employed",
+          "Tier_3|Retired"
+        ],
+        "correct_answer": "Tier_1|Retired"
+      },
+      {
+        "id": "g3",
+        "type": "single_choice",
+        "weight": 1.5,
+        "prompt": "For Occupation = Retired, which trend across city tiers best matches the bubble heights?",
+        "options": [
+          "Tier_1 > Tier_2 > Tier_3",
+          "Tier_3 > Tier_2 > Tier_1",
+          "No_clear_difference"
+        ],
+        "correct_answer": "Tier_1 > Tier_2 > Tier_3"
+      },
+      {
+        "id": "g4",
+        "type": "multi_choice",
+        "weight": 2.5,
+        "prompt": "Choose the top-2 priority intervention groups (highest pressure first).",
+        "options": [
+          "Tier_1|Retired",
+          "Tier_1|Student",
+          "Tier_2|Self_Employed",
+          "Tier_3|Self_Employed"
+        ],
+        "correct_answer": [
+          "Tier_1|Retired",
+          "Tier_1|Student"
+        ]
+      }
+    ]
+  },
+  "individual_endpoint": {
+    "weight": 0.4,
+    "prompt": "Use point cloud to pick one high-pressure individual and choose exactly 2 supporting evidence tags.",
+    "top_candidates": [
+      "PID_000075",
+      "PID_000089",
+      "PID_000099"
+    ],
+    "required_evidence_count": 2,
+    "evidence_options": [
+      "City_Tier",
+      "Occupation",
+      "Dependents_Group",
+      "Savings_Rate_clip",
+      "Pressure_Index_clip"
+    ],
+    "evidence_score_each": 1.0,
+    "rank_scores": {
+      "top1": 2.0,
+      "top23": 1.0,
+      "miss": 0.0
+    },
+    "time_bonus": [
+      {
+        "max_seconds": 180,
+        "bonus": 0.6
+      },
+      {
+        "max_seconds": 300,
+        "bonus": 0.3
+      }
+    ]
+  },
+  "point_cloud_defaults": {
+    "default_mode": "pca",
+    "available_modes": [
+      "pca",
+      "umap"
+    ]
+  },
+  "truth": {
+    "highest_city_tier_pressure": "Tier_1",
+    "tier_delta_tier1_minus_tier2": 0.0983,
+    "tier_delta_tier2_minus_tier3": 0.0528,
+    "top_city_occupation_groups": [
+      "Tier_1|Retired",
+      "Tier_1|Student"
+    ],
+    "retired_pattern": "Tier_1 > Tier_2 > Tier_3"
+  },
+  "tasks": [
+    {
+      "id": "g1",
+      "type": "single_choice",
+      "weight": 1.5,
+      "prompt": "From the bubble view, which City_Tier has the highest overall pressure level?",
+      "options": [
+        "Tier_1",
+        "Tier_2",
+        "Tier_3"
+      ],
+      "correct_answer": "Tier_1"
+    },
+    {
+      "id": "g2",
+      "type": "single_choice",
+      "weight": 2,
+      "prompt": "Which City_Tier x Occupation segment has the highest mean pressure?",
+      "options": [
+        "Tier_1|Retired",
+        "Tier_1|Professional",
+        "Tier_2|Self_Employed",
+        "Tier_3|Retired"
+      ],
+      "correct_answer": "Tier_1|Retired"
+    },
+    {
+      "id": "g3",
+      "type": "single_choice",
+      "weight": 1.5,
+      "prompt": "For Occupation = Retired, which trend across city tiers best matches the bubble heights?",
+      "options": [
+        "Tier_1 > Tier_2 > Tier_3",
+        "Tier_3 > Tier_2 > Tier_1",
+        "No_clear_difference"
+      ],
+      "correct_answer": "Tier_1 > Tier_2 > Tier_3"
+    },
+    {
+      "id": "g4",
+      "type": "multi_choice",
+      "weight": 2.5,
+      "prompt": "Choose the top-2 priority intervention groups (highest pressure first).",
+      "options": [
+        "Tier_1|Retired",
+        "Tier_1|Student",
+        "Tier_2|Self_Employed",
+        "Tier_3|Self_Employed"
+      ],
+      "correct_answer": [
+        "Tier_1|Retired",
+        "Tier_1|Student"
+      ]
+    }
+  ],
+  "tables": {
+    "city_means": [
+      {
+        "City_Tier": "Tier_1",
+        "Pressure_Index_clip": 0.8398
+      },
+      {
+        "City_Tier": "Tier_2",
+        "Pressure_Index_clip": 0.7415
+      },
+      {
+        "City_Tier": "Tier_3",
+        "Pressure_Index_clip": 0.6887
+      }
+    ],
+    "interaction_city_occupation_pressure": [
+      {
+        "City_Tier": "Tier_1",
+        "Professional": 0.8378,
+        "Retired": 0.8413,
+        "Self_Employed": 0.8387,
+        "Student": 0.8412
+      },
+      {
+        "City_Tier": "Tier_2",
+        "Professional": 0.7401,
+        "Retired": 0.7426,
+        "Self_Employed": 0.7427,
+        "Student": 0.7407
+      },
+      {
+        "City_Tier": "Tier_3",
+        "Professional": 0.6886,
+        "Retired": 0.6905,
+        "Self_Employed": 0.6874,
+        "Student": 0.6881
+      }
+    ],
+    "cluster_profiles": [
+      {
+        "Cluster_Source": "GMM",
+        "Cluster_ID": 3,
+        "Mean_Pressure": 0.8310
+      },
+      {
+        "Cluster_Source": "GMM",
+        "Cluster_ID": 0,
+        "Mean_Pressure": 0.8141
+      },
+      {
+        "Cluster_Source": "KMeans",
+        "Cluster_ID": 3,
+        "Mean_Pressure": 0.8120
+      }
+    ]
+  },
+  "ai_cards": [
+    {
+      "title": "Tier Ranking",
+      "text": "Average pressure trend is Tier_1 > Tier_2 > Tier_3."
+    },
+    {
+      "title": "Top Segment",
+      "text": "Tier_1|Retired has the highest segment mean pressure."
+    },
+    {
+      "title": "Second Highest Segment",
+      "text": "Tier_1|Student is the second highest pressure segment."
+    },
+    {
+      "title": "Retired Pattern",
+      "text": "For Retired, pressure decreases from Tier_1 to Tier_3."
+    }
+  ]
+}

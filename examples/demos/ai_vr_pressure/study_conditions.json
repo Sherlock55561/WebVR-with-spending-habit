@@ -1,0 +1,33 @@
+{
+  "study_id": "pressure_ai_vr_v1",
+  "conditions": [
+    {
+      "id": "2d_ai_off",
+      "label": "2D + No AI",
+      "interface_type": "2d",
+      "ai_assist": false,
+      "description": "Use non-immersive bubbles + point cloud. No AI insight cards."
+    },
+    {
+      "id": "2d_ai_on",
+      "label": "2D + AI(ML)",
+      "interface_type": "2d",
+      "ai_assist": true,
+      "description": "Use non-immersive bubbles + point cloud with AI(ML) insight cards."
+    },
+    {
+      "id": "vr_ai_off",
+      "label": "VR + No AI",
+      "interface_type": "vr",
+      "ai_assist": false,
+      "description": "Use immersive bubbles + point cloud. No AI insight cards."
+    },
+    {
+      "id": "vr_ai_on",
+      "label": "VR + AI(ML)",
+      "interface_type": "vr",
+      "ai_assist": true,
+      "description": "Use immersive bubbles + point cloud with AI(ML) insight cards."
+    }
+  ]
+}
