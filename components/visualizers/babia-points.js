@@ -15,7 +15,7 @@ AFRAME.registerComponent('babia-points', {
         y: { type: 'string', default: 'y' },
         z: { type: 'string', default: 'z' },
         color: { type: 'string' },
-        colorMode: { type: 'string', default: 'field' }, // field | pca
+        colorMode: { type: 'string', default: 'field' }, // field | pca | hex
         mode: { type: 'string', default: '' }, // '' | pca | gmm | umap
         pcaX: { type: 'string', default: 'PCA1' },
         pcaY: { type: 'string', default: 'PCA2' },
@@ -294,6 +294,15 @@ AFRAME.registerComponent('babia-points', {
                     color = pcaColorB;
                 } else {
                     color = pcaColorC;
+                }
+            } else if (data.colorMode === 'hex' && cKey) {
+                const rawHex = String(row[cKey] || '').trim();
+                if (rawHex) {
+                    try {
+                        color = new THREE.Color(rawHex);
+                    } catch (e) {
+                        // fallback keeps default color
+                    }
                 }
             } else if (cKey) {
                 const raw = row[cKey];
@@ -685,6 +694,7 @@ AFRAME.registerComponent('babia-points-tooltip', {
         this._focusLineObj = null;
         this._lastFocusUpdate = 0;
         this._onObject3DSet = this._onObject3DSet.bind(this);
+        this.onClick = this.onClick.bind(this);
 
         this.onIntersect = this.onIntersect.bind(this);
         this.onClear = this.onClear.bind(this);
@@ -692,6 +702,7 @@ AFRAME.registerComponent('babia-points-tooltip', {
 
         this.el.addEventListener('raycaster-intersection', this.onIntersect);
         this.el.addEventListener('raycaster-intersection-cleared', this.onClear);
+        this.el.addEventListener('click', this.onClick);
         this.tooltipEl.addEventListener('object3dset', this._onObject3DSet);
         if (this.el.sceneEl) {
             this.el.sceneEl.addEventListener('camera-set-active', this.attachPanel);
@@ -757,6 +768,7 @@ AFRAME.registerComponent('babia-points-tooltip', {
     remove: function () {
         this.el.removeEventListener('raycaster-intersection', this.onIntersect);
         this.el.removeEventListener('raycaster-intersection-cleared', this.onClear);
+        this.el.removeEventListener('click', this.onClick);
         if (this.el.sceneEl) {
             this.el.sceneEl.removeEventListener('camera-set-active', this.attachPanel);
         }
@@ -1139,11 +1151,25 @@ AFRAME.registerComponent('babia-points-tooltip', {
             this.tooltipEl.setAttribute('visible', false);
         }
         this._hideFocus();
+        this._lastSelection = null;
         if (this.lastBabia && this.lastBabia.clearHighlight) {
             this.lastBabia.clearHighlight();
         }
         this.lastBabia = null;
         this._lastIndex = null;
+    },
+
+    onClick: function () {
+        if (!this._lastSelection || !this._lastSelection.row) {
+            return;
+        }
+        const row = this._lastSelection.row;
+        this.el.emit('babia-points-select', {
+            personId: row.PersonID,
+            row: row,
+            index: this._lastSelection.index,
+            sourceId: this._lastSelection.sourceId
+        }, false);
     },
 
     onIntersect: function (evt) {
@@ -1190,6 +1216,11 @@ AFRAME.registerComponent('babia-points-tooltip', {
             return;
         }
         const row = babia.newData[map[index]];
+        this._lastSelection = {
+            row: row,
+            index: index,
+            sourceId: babia && babia.el ? babia.el.id : null
+        };
         const activeFields = (obj && obj.userData && obj.userData.fields) ||
             (babia.pointsObj && babia.pointsObj.userData && babia.pointsObj.userData.fields) || null;
         const fallbackFields = activeFields

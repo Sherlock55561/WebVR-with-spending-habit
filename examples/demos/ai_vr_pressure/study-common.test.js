@@ -32,10 +32,57 @@ function testFindNearestPoint() {
   assert.strictEqual(p.PersonID, "A");
 }
 
+function testNormalizeByQuantileUsesBounds() {
+  const rows = [
+    { Income: 10 },
+    { Income: 20 },
+    { Income: 30 },
+    { Income: 40 },
+    { Income: 1000 },
+  ];
+  const bounds = internal.getQuantileBounds(rows, "Income", 0.1, 0.9);
+  assert.strictEqual(bounds.min, 14);
+  assert(Math.abs(bounds.max - 616) < 1e-9);
+  assert.strictEqual(internal.normalizeWithBounds(14, bounds), 0);
+  assert(Math.abs(internal.normalizeWithBounds(616, bounds) - 1) < 1e-9);
+  assert.strictEqual(internal.normalizeWithBounds(1000, bounds), 1);
+}
+
+function testFilterMatchUsesOrWithinAndAcross() {
+  const row = { Occupation: "Student", City_Tier: "Tier_1" };
+  const filters = {
+    occupations: ["Student", "Professional"],
+    cityTiers: ["Tier_1", "Tier_2"],
+  };
+  const missCity = {
+    occupations: ["Student", "Professional"],
+    cityTiers: ["Tier_3"],
+  };
+  const missOcc = {
+    occupations: ["Retired"],
+    cityTiers: ["Tier_1", "Tier_2"],
+  };
+  assert.strictEqual(internal.matchesStudyFilters(row, filters), true);
+  assert.strictEqual(internal.matchesStudyFilters(row, missCity), false);
+  assert.strictEqual(internal.matchesStudyFilters(row, missOcc), false);
+}
+
+function testCombinedColorMixesIncomeAndPressure() {
+  const c1 = internal.computeCombinedColor(0, 0);
+  const c2 = internal.computeCombinedColor(1, 0);
+  const c3 = internal.computeCombinedColor(1, 1);
+  assert.strictEqual(c1.toLowerCase(), "#330000");
+  assert.strictEqual(c2.toLowerCase(), "#ff0000");
+  assert.strictEqual(c3.toLowerCase(), "#ffd400");
+}
+
 function main() {
   testParseCsvText();
   testComputePressureRange();
   testFindNearestPoint();
+  testNormalizeByQuantileUsesBounds();
+  testFilterMatchUsesOrWithinAndAcross();
+  testCombinedColorMixesIncomeAndPressure();
   console.log("study-common tests passed");
 }
 

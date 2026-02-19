@@ -17,7 +17,15 @@ Notes:
 - 2D conditions use native 2D visuals:
   - heatmap for group endpoint
   - scatter (PCA/UMAP switch) for individual endpoint
-- Point cloud defaults to PCA and allows optional UMAP switching.
+- VR conditions use tri-view point cloud (`PCA`, `UMAP`, `GMM`) side by side.
+- VR point cloud supports three color modes:
+  - `Pressure-only` (default)
+  - `Income-only`
+  - `Income+Pressure` (linear blend)
+- Color normalization uses p10-p90 clipping before mapping.
+- `Occupation` and `City_Tier` are multi-select filters:
+  - OR within each field
+  - AND across fields
 - Reference tables are hidden by default so participants rely on visual analysis.
 
 ## Files

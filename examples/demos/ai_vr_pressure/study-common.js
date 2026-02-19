@@ -144,9 +144,104 @@
     return "rgb(" + r + "," + g + "," + b + ")";
   }
 
+  function computeQuantile(sortedValues, q) {
+    if (!Array.isArray(sortedValues) || sortedValues.length === 0) return 0;
+    var clampedQ = clamp01(Number(q));
+    var n = sortedValues.length;
+    if (n === 1) return Number(sortedValues[0]) || 0;
+    var index = (n - 1) * clampedQ;
+    var lower = Math.floor(index);
+    var upper = Math.ceil(index);
+    if (lower === upper) return Number(sortedValues[lower]) || 0;
+    var weight = index - lower;
+    var lowVal = Number(sortedValues[lower]) || 0;
+    var highVal = Number(sortedValues[upper]) || 0;
+    return lowVal + ((highVal - lowVal) * weight);
+  }
+
+  function getQuantileBounds(rows, field, lowQ, highQ) {
+    var values = [];
+    (rows || []).forEach(function (row) {
+      var v = Number(row[field]);
+      if (Number.isFinite(v)) values.push(v);
+    });
+    if (!values.length) return { min: 0, max: 1 };
+    values.sort(function (a, b) { return a - b; });
+    var low = Number.isFinite(Number(lowQ)) ? Number(lowQ) : 0.1;
+    var high = Number.isFinite(Number(highQ)) ? Number(highQ) : 0.9;
+    if (high < low) {
+      var tmp = high;
+      high = low;
+      low = tmp;
+    }
+    var min = computeQuantile(values, low);
+    var max = computeQuantile(values, high);
+    if (min === max) max = min + 1e-9;
+    return { min: min, max: max };
+  }
+
+  function normalizeWithBounds(value, bounds) {
+    var v = Number(value);
+    if (!Number.isFinite(v)) return 0;
+    var min = bounds && Number.isFinite(Number(bounds.min)) ? Number(bounds.min) : 0;
+    var max = bounds && Number.isFinite(Number(bounds.max)) ? Number(bounds.max) : 1;
+    if (max <= min) return 0;
+    return clamp01((v - min) / (max - min));
+  }
+
+  function hexToRgb(hex) {
+    var s = String(hex || "").trim().replace(/^#/, "");
+    if (s.length === 3) {
+      s = s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
+    }
+    if (!/^[0-9a-fA-F]{6}$/.test(s)) {
+      return { r: 0, g: 0, b: 0 };
+    }
+    return {
+      r: parseInt(s.slice(0, 2), 16),
+      g: parseInt(s.slice(2, 4), 16),
+      b: parseInt(s.slice(4, 6), 16)
+    };
+  }
+
+  function rgbToHex(rgb) {
+    function toHex(v) {
+      var n = Math.max(0, Math.min(255, Math.round(v)));
+      var h = n.toString(16);
+      return h.length === 1 ? "0" + h : h;
+    }
+    return "#" + toHex(rgb.r) + toHex(rgb.g) + toHex(rgb.b);
+  }
+
+  function mixHexColors(hexA, hexB, t) {
+    var a = hexToRgb(hexA);
+    var b = hexToRgb(hexB);
+    var u = clamp01(Number(t));
+    return rgbToHex({
+      r: lerp(a.r, b.r, u),
+      g: lerp(a.g, b.g, u),
+      b: lerp(a.b, b.b, u)
+    });
+  }
+
+  function computeCombinedColor(incomeNorm, pressureNorm) {
+    var incomeColor = mixHexColors("#330000", "#ff0000", incomeNorm);
+    return mixHexColors(incomeColor, "#ffd400", pressureNorm);
+  }
+
+  function matchesStudyFilters(row, filters) {
+    if (!row) return false;
+    var occupations = (filters && Array.isArray(filters.occupations)) ? filters.occupations : [];
+    var cityTiers = (filters && Array.isArray(filters.cityTiers)) ? filters.cityTiers : [];
+    var occOk = occupations.length === 0 || occupations.indexOf(String(row.Occupation)) >= 0;
+    var cityOk = cityTiers.length === 0 || cityTiers.indexOf(String(row.City_Tier)) >= 0;
+    return occOk && cityOk;
+  }
+
   function normalizePointMode(mode) {
     var m = String(mode || "").toLowerCase().trim();
     if (m === "umap") return "umap";
+    if (m === "gmm") return "gmm";
     return "pca";
   }
 
@@ -389,6 +484,387 @@
     }
   }
 
+  function getDependentsDataPath(key, fallbackPath) {
+    var base = "../1.0.11/data_examples/";
+    if (key === "1") return base + "babiaxr_dependents_1.csv";
+    if (key === "2") return base + "babiaxr_dependents_2.csv";
+    if (key === "3") return base + "babiaxr_dependents_3.csv";
+    if (key === "4+") return base + "babiaxr_dependents_4+.csv";
+    return fallbackPath || (base + "babiaxr_all_dependents_groups.csv");
+  }
+
+  function uniqueValues(rows, field) {
+    var map = {};
+    (rows || []).forEach(function (row) {
+      var value = row[field];
+      if (value === undefined || value === null || String(value).trim() === "") return;
+      map[String(value)] = true;
+    });
+    return Object.keys(map).sort();
+  }
+
+  function syncSelectedValues(selected, available) {
+    var availableMap = {};
+    (available || []).forEach(function (v) {
+      availableMap[v] = true;
+    });
+    return (selected || []).filter(function (v) { return !!availableMap[v]; });
+  }
+
+  function renderMultiCheck(containerId, values, selected, inputName) {
+    var el = byId(containerId);
+    if (!el) return;
+    var selectedMap = {};
+    (selected || []).forEach(function (v) {
+      selectedMap[v] = true;
+    });
+    el.innerHTML = (values || []).map(function (value) {
+      var checked = selectedMap[value] ? " checked" : "";
+      return (
+        "<label><input type='checkbox' name='" + inputName + "' value='" + escapeHtml(value) + "'" + checked + ">" +
+        escapeHtml(value) + "</label>"
+      );
+    }).join("");
+    if (!el.innerHTML) {
+      el.innerHTML = "<span class='muted'>No options.</span>";
+    }
+  }
+
+  function readCheckedValuesFrom(containerId, inputName) {
+    var container = byId(containerId);
+    if (!container) return [];
+    var checked = container.querySelectorAll("input[name='" + inputName + "']:checked");
+    return Array.prototype.map.call(checked, function (node) { return node.value; });
+  }
+
+  function enrichRowsForColor(rows, colorMode, bounds) {
+    return (rows || []).map(function (row) {
+      var clone = Object.assign({}, row);
+      clone.__IncomeNorm = normalizeWithBounds(row.Income, bounds.income);
+      clone.__PressureNorm = normalizeWithBounds(row.Pressure_Index_clip, bounds.pressure);
+      if (colorMode === "income") {
+        clone.__ColorMetric = clone.__IncomeNorm;
+      } else if (colorMode === "combined") {
+        clone.__ColorHex = computeCombinedColor(clone.__IncomeNorm, clone.__PressureNorm);
+      } else {
+        clone.__ColorMetric = clone.__PressureNorm;
+      }
+      return clone;
+    });
+  }
+
+  function splitRowsByFilters(rows, filters) {
+    var active = [];
+    var dim = [];
+    (rows || []).forEach(function (row) {
+      if (matchesStudyFilters(row, filters)) {
+        active.push(row);
+      } else {
+        dim.push(row);
+      }
+    });
+    return { active: active, dim: dim };
+  }
+
+  function setTriPointRows(entityId, rows, mode, colorMode, opacity) {
+    var el = byId(entityId);
+    if (!el || typeof el.setAttribute !== "function") return;
+    el.setAttribute("babia-points", "data", JSON.stringify(rows || []));
+    el.setAttribute("babia-points", "mode", mode);
+    el.setAttribute("babia-points", "opacity", opacity);
+    if (colorMode === "combined") {
+      el.setAttribute("babia-points", "colorMode", "hex");
+      el.setAttribute("babia-points", "color", "__ColorHex");
+    } else if (colorMode === "income") {
+      el.setAttribute("babia-points", "colorMode", "field");
+      el.setAttribute("babia-points", "color", "__ColorMetric");
+      el.setAttribute("babia-points", "colorMin", "#330000");
+      el.setAttribute("babia-points", "colorMax", "#ff0000");
+    } else {
+      el.setAttribute("babia-points", "colorMode", "field");
+      el.setAttribute("babia-points", "color", "__ColorMetric");
+      el.setAttribute("babia-points", "colorMin", "#3a2f0a");
+      el.setAttribute("babia-points", "colorMax", "#ffd400");
+    }
+  }
+
+  function parseViewFromSourceId(sourceId) {
+    var s = String(sourceId || "").toLowerCase();
+    if (s.indexOf("umap") >= 0) return "umap";
+    if (s.indexOf("gmm") >= 0) return "gmm";
+    return "pca";
+  }
+
+  function setSelectedInfoFromRow(row) {
+    var info = byId("individual-selected-info");
+    if (!info) return;
+    if (!row) {
+      info.textContent = "No point selected.";
+      return;
+    }
+    info.textContent =
+      "Selected " + String(row.PersonID || "") +
+      " | Occupation=" + String(row.Occupation || "") +
+      " | City=" + String(row.City_Tier || "") +
+      " | Income=" + Number(row.Income || 0).toFixed(1) +
+      " | Pressure=" + Number(row.Pressure_Index_clip || 0).toFixed(3) +
+      " | Age=" + Number(row.Age || 0).toFixed(0);
+  }
+
+  function highlightPersonAcrossTri(state, personId) {
+    var ids = [
+      "tri-pca-main", "tri-umap-main", "tri-gmm-main",
+      "tri-pca-dim", "tri-umap-dim", "tri-gmm-dim"
+    ];
+    ids.forEach(function (id) {
+      var el = byId(id);
+      var comp = el && el.components ? el.components["babia-points"] : null;
+      if (!comp) return;
+      if (comp.clearHighlight) comp.clearHighlight();
+      if (!personId || !Array.isArray(comp.newData)) return;
+      var index = -1;
+      for (var i = 0; i < comp.newData.length; i += 1) {
+        if (String(comp.newData[i].PersonID || "") === String(personId)) {
+          index = i;
+          break;
+        }
+      }
+      if (index >= 0 && comp.setHighlight) {
+        comp.setHighlight(index, "#fde047");
+      }
+    });
+  }
+
+  function queueHighlightTri(state, personId) {
+    if (typeof window === "undefined") return;
+    if (state._highlightTimer) window.clearTimeout(state._highlightTimer);
+    state._highlightTimer = window.setTimeout(function () {
+      highlightPersonAcrossTri(state, personId);
+    }, 50);
+  }
+
+  function renderTriPointCloud(state) {
+    if (!byId("tri-pointcloud-root")) return;
+    var rows = state.triRows || [];
+    if (!rows.length) return;
+
+    var bounds = {
+      income: getQuantileBounds(rows, "Income", 0.1, 0.9),
+      pressure: getQuantileBounds(rows, "Pressure_Index_clip", 0.1, 0.9)
+    };
+    state.pressureRange = bounds.pressure;
+    updatePressureLegend(bounds.pressure);
+
+    var enriched = enrichRowsForColor(rows, state.colorMode, bounds);
+    var split = splitRowsByFilters(enriched, state.filters);
+
+    setTriPointRows("tri-pca-main", split.active, "pca", state.colorMode, 0.92);
+    setTriPointRows("tri-pca-dim", split.dim, "pca", state.colorMode, 0.12);
+    setTriPointRows("tri-umap-main", split.active, "umap", state.colorMode, 0.92);
+    setTriPointRows("tri-umap-dim", split.dim, "umap", state.colorMode, 0.12);
+    setTriPointRows("tri-gmm-main", split.active, "gmm", state.colorMode, 0.92);
+    setTriPointRows("tri-gmm-dim", split.dim, "gmm", state.colorMode, 0.12);
+
+    state.viewUsage.pca_used = true;
+    state.viewUsage.umap_used = true;
+    state.viewUsage.gmm_used = true;
+    state.viewUsage.color_mode = state.colorMode;
+
+    if (state.selectedPersonId) {
+      queueHighlightTri(state, state.selectedPersonId);
+    }
+  }
+
+  function ensureTriGestureBinding(state) {
+    if (state.triGestureBound || typeof document === "undefined") return;
+    var wraps = document.querySelectorAll(".tri-scene-wrap");
+    Array.prototype.forEach.call(wraps, function (wrap) {
+      var view = String(wrap.getAttribute("data-tri-view") || "pca").toLowerCase();
+      if (!state.triTransforms[view]) {
+        state.triTransforms[view] = { rx: 0, ry: 0, scale: 1 };
+      }
+      var dragging = false;
+      var moved = false;
+      var lastX = 0;
+      var lastY = 0;
+
+      function applyTransform() {
+        var root = byId("tri-root-" + view);
+        var t = state.triTransforms[view];
+        if (!root || !t) return;
+        root.setAttribute("rotation", t.rx + " " + t.ry + " 0");
+        root.setAttribute("scale", t.scale + " " + t.scale + " " + t.scale);
+      }
+
+      wrap.addEventListener("mousedown", function (evt) {
+        dragging = true;
+        moved = false;
+        lastX = evt.clientX;
+        lastY = evt.clientY;
+        wrap.classList.add("dragging");
+      });
+
+      window.addEventListener("mousemove", function (evt) {
+        if (!dragging) return;
+        var dx = evt.clientX - lastX;
+        var dy = evt.clientY - lastY;
+        if (Math.abs(dx) > 2 || Math.abs(dy) > 2) moved = true;
+        var t = state.triTransforms[view];
+        t.ry += dx * 0.25;
+        t.rx += dy * 0.25;
+        if (t.rx > 85) t.rx = 85;
+        if (t.rx < -85) t.rx = -85;
+        lastX = evt.clientX;
+        lastY = evt.clientY;
+        applyTransform();
+      });
+
+      window.addEventListener("mouseup", function () {
+        if (!dragging) return;
+        dragging = false;
+        wrap.classList.remove("dragging");
+        if (moved) state.suppressSelectionUntil = Date.now() + 180;
+      });
+
+      wrap.addEventListener("wheel", function (evt) {
+        evt.preventDefault();
+        var t = state.triTransforms[view];
+        var next = t.scale + ((evt.deltaY < 0) ? 0.08 : -0.08);
+        if (next < 0.5) next = 0.5;
+        if (next > 3) next = 3;
+        t.scale = next;
+        applyTransform();
+      }, { passive: false });
+    });
+    state.triGestureBound = true;
+  }
+
+  function bindTriSelectionEvents(state) {
+    if (state.triSelectionBound || typeof document === "undefined") return;
+    ["tri-ray-pca", "tri-ray-umap", "tri-ray-gmm"].forEach(function (rayId) {
+      var ray = byId(rayId);
+      if (!ray) return;
+      ray.addEventListener("babia-points-select", function (evt) {
+        if (state.suppressSelectionUntil && Date.now() < state.suppressSelectionUntil) return;
+        var detail = (evt && evt.detail) ? evt.detail : {};
+        var row = detail.row;
+        if (!row) return;
+        var personId = String(row.PersonID || "").trim();
+        if (!personId) return;
+        state.selectedPersonId = personId;
+        state.selectedPoint = { row: row };
+        state.pointMode = parseViewFromSourceId(detail.sourceId);
+        state.viewUsage.pca_used = state.viewUsage.pca_used || state.pointMode === "pca";
+        state.viewUsage.umap_used = state.viewUsage.umap_used || state.pointMode === "umap";
+        state.viewUsage.gmm_used = state.viewUsage.gmm_used || state.pointMode === "gmm";
+
+        var pidInput = byId("individual-person-id");
+        if (pidInput) pidInput.value = personId;
+
+        var modeLabelEl = byId("point-mode-current");
+        if (modeLabelEl) modeLabelEl.textContent = state.pointMode.toUpperCase();
+
+        setSelectedInfoFromRow(row);
+        queueHighlightTri(state, personId);
+      });
+    });
+    state.triSelectionBound = true;
+  }
+
+  function resetTriViews(state) {
+    ["pca", "umap", "gmm"].forEach(function (view) {
+      state.triTransforms[view] = { rx: 0, ry: 0, scale: 1 };
+      var root = byId("tri-root-" + view);
+      if (!root) return;
+      root.setAttribute("rotation", "0 0 0");
+      root.setAttribute("scale", "1 1 1");
+    });
+    state.selectedPersonId = "";
+    highlightPersonAcrossTri(state, "");
+    setSelectedInfoFromRow(null);
+    var pidInput = byId("individual-person-id");
+    if (pidInput) pidInput.value = "";
+  }
+
+  function bindTriControlEvents(state, defaultDataPath) {
+    if (state.triControlsBound || typeof document === "undefined") return;
+    var dependentsSelect = byId("dependents-source");
+    if (dependentsSelect) {
+      dependentsSelect.addEventListener("change", function () {
+        state.dependentsKey = dependentsSelect.value || "all";
+        loadTriRowsForDependents(state, defaultDataPath);
+      });
+    }
+
+    var onFilterChange = function () {
+      state.filters.occupations = readCheckedValuesFrom("occupation-filter", "tri-occupation");
+      state.filters.cityTiers = readCheckedValuesFrom("citytier-filter", "tri-citytier");
+      renderTriPointCloud(state);
+    };
+    var occContainer = byId("occupation-filter");
+    var cityContainer = byId("citytier-filter");
+    if (occContainer) occContainer.addEventListener("change", onFilterChange);
+    if (cityContainer) cityContainer.addEventListener("change", onFilterChange);
+
+    var colorButtons = document.querySelectorAll(".color-mode");
+    Array.prototype.forEach.call(colorButtons, function (btn) {
+      btn.addEventListener("click", function () {
+        var next = String(btn.getAttribute("data-color-mode") || "pressure").toLowerCase();
+        if (["pressure", "income", "combined"].indexOf(next) < 0) next = "pressure";
+        state.colorMode = next;
+        state.viewUsage.color_mode = next;
+        Array.prototype.forEach.call(colorButtons, function (item) {
+          item.classList.toggle("active-mode", item === btn);
+        });
+        renderTriPointCloud(state);
+      });
+    });
+
+    var resetBtn = byId("tri-reset-view");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", function () {
+        resetTriViews(state);
+      });
+    }
+
+    state.triControlsBound = true;
+  }
+
+  function renderTriFilterOptions(state) {
+    var occupations = uniqueValues(state.triRows, "Occupation");
+    var cityTiers = uniqueValues(state.triRows, "City_Tier");
+    state.filters.occupations = syncSelectedValues(state.filters.occupations, occupations);
+    state.filters.cityTiers = syncSelectedValues(state.filters.cityTiers, cityTiers);
+    renderMultiCheck("occupation-filter", occupations, state.filters.occupations, "tri-occupation");
+    renderMultiCheck("citytier-filter", cityTiers, state.filters.cityTiers, "tri-citytier");
+  }
+
+  async function loadTriRowsForDependents(state, defaultDataPath) {
+    var path = getDependentsDataPath(state.dependentsKey, defaultDataPath);
+    try {
+      state.triRows = await loadCsvRows(path);
+      renderTriFilterOptions(state);
+      renderTriPointCloud(state);
+    } catch (err) {
+      var info = byId("individual-selected-info");
+      if (info) info.textContent = "Failed to load point cloud CSV: " + err.message;
+    }
+  }
+
+  async function initTriPointCloud(state, defaultDataPath) {
+    if (!byId("tri-pointcloud-root")) return;
+    state.dependentsKey = "all";
+    state.colorMode = "pressure";
+    state.filters = state.filters || { occupations: [], cityTiers: [] };
+    state.triRows = [];
+    state.triTransforms = state.triTransforms || {};
+    state.viewUsage.color_mode = "pressure";
+    bindTriControlEvents(state, defaultDataPath);
+    bindTriSelectionEvents(state);
+    ensureTriGestureBinding(state);
+    await loadTriRowsForDependents(state, defaultDataPath);
+  }
+
   function getGroupTasks(taskDef) {
     if (taskDef && taskDef.group_endpoint && Array.isArray(taskDef.group_endpoint.tasks)) {
       return taskDef.group_endpoint.tasks;
@@ -409,11 +885,22 @@
       participantId: "",
       conditionId: conditionId,
       pointMode: "pca",
-      viewUsage: { pca_used: false, umap_used: false },
+      colorMode: "pressure",
+      dependentsKey: "all",
+      viewUsage: { pca_used: false, umap_used: false, gmm_used: false, color_mode: "pressure" },
       pressureRange: { min: 0, max: 1 },
       scatterPoints: [],
       selectedPoint: null,
-      scatterBound: false
+      selectedPersonId: "",
+      scatterBound: false,
+      triRows: [],
+      filters: { occupations: [], cityTiers: [] },
+      triControlsBound: false,
+      triSelectionBound: false,
+      triGestureBound: false,
+      triTransforms: {},
+      suppressSelectionUntil: 0,
+      _highlightTimer: null
     };
 
     document.addEventListener("click", function () {
@@ -434,7 +921,8 @@
     );
 
     var rawRows = [];
-    var needsRows = !!byId("individual-scatter-canvas") || !!byId("individual-points");
+    var hasTri = !!byId("tri-pointcloud-root");
+    var needsRows = !!byId("individual-scatter-canvas") || !!byId("individual-points") || hasTri;
     if (needsRows) {
       try {
         rawRows = await loadCsvRows(dataPath);
@@ -530,7 +1018,7 @@
           var safeTag = escapeHtml(tag);
           formHtml += "<label class='option'><input type='checkbox' name='individual-evidence' value='" + safeTag + "'/> " + safeTag + "</label>";
         });
-        formHtml += "<p class='muted'>Current point mode: <span class='mono' id='point-mode-current'>" + defaultPointMode.toUpperCase() + "</span></p>";
+        formHtml += "<p class='muted'>Current source view: <span class='mono' id='point-mode-current'>" + defaultPointMode.toUpperCase() + "</span></p>";
         formHtml += "</section>";
       }
 
@@ -572,7 +1060,8 @@
             selected_person_id: selectedPersonId,
             evidence_tags: evidenceTags,
             duration_seconds: (now.getTime() - state.startedAt.getTime()) / 1000.0,
-            point_mode: state.pointMode
+            point_mode: state.pointMode,
+            color_mode: state.colorMode
           };
         }
 
@@ -605,6 +1094,10 @@
       });
     }
 
+    if (hasTri) {
+      await initTriPointCloud(state, dataPath);
+    }
+
     var scoreHelpEl = byId("score-help");
     if (scoreHelpEl) {
       scoreHelpEl.textContent =
@@ -616,7 +1109,11 @@
   var internal = {
     parseCsvText: parseCsvText,
     computePressureRange: computePressureRange,
-    findNearestPoint: findNearestPoint
+    findNearestPoint: findNearestPoint,
+    getQuantileBounds: getQuantileBounds,
+    normalizeWithBounds: normalizeWithBounds,
+    matchesStudyFilters: matchesStudyFilters,
+    computeCombinedColor: computeCombinedColor
   };
 
   if (typeof window !== "undefined") {
