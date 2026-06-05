@@ -8,3 +8,7 @@ dist/main.*
 
 # Mac
 .DS_Store
+
+issues/
+docs/plans/
+babiaxr-issues22.tar
