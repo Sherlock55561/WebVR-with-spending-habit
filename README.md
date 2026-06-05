@@ -6,19 +6,18 @@ The project is built as a modified fork of BabiaXR `aframe-babia-components`, an
 
 ## Sample Video
 
-Paste your sample video link here after uploading it to GitHub, YouTube, OneDrive, Google Drive, or another video host:
+GitHub README pages do not reliably render a full video player. Use a clickable thumbnail image that opens the hosted video:
 
-```md
-[Watch the sample video](https://github.com/Sherlock55561/WebVR-with-spending-habit/releases/tag/demo-v1)
-```
+[![Watch the sample video](assets/readme/sample-video-thumbnail.svg)](https://github.com/Sherlock55561/WebVR-with-spending-habit/releases/tag/demo-v1)
 
-Recommended GitHub workflow:
+To update this section later:
 
-1. Upload the video through the GitHub README editor, an issue, or a release.
-2. Copy the generated video URL.
-3. Replace `PASTE_VIDEO_URL_HERE` above with that URL.
+1. Upload the video through GitHub Releases, YouTube, OneDrive, Google Drive, or another video host.
+2. Copy the video URL.
+3. Replace `assets/readme/sample-video-thumbnail.svg` with a screenshot thumbnail, or change the image path to another image URL.
+4. Replace the release URL in the thumbnail link with the hosted video URL.
 
-Avoid committing large `.mp4` files directly to the repository.
+Avoid committing large `.mp4` files directly to the repository. A small screenshot thumbnail is fine.
 
 ## Project Overview
 

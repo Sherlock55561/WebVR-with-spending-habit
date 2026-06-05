@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Sample video thumbnail placeholder</title>
+  <desc id="desc">Placeholder image for the project sample video link.</desc>
+  <rect width="960" height="540" fill="#111827"/>
+  <rect x="24" y="24" width="912" height="492" rx="16" fill="#1f2937" stroke="#475569" stroke-width="2"/>
+  <circle cx="480" cy="240" r="72" fill="#2563eb"/>
+  <path d="M456 198 L456 282 L528 240 Z" fill="#ffffff"/>
+  <text x="480" y="350" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" fill="#f8fafc">Sample Video</text>
+  <text x="480" y="394" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#cbd5e1">Replace this thumbnail with your demo screenshot</text>
+</svg>
