@@ -1,180 +1,142 @@
-# Aframe-babia-components
+# WebVR Spending Habit Pressure Study
 
-[![Version](http://img.shields.io/npm/v/aframe-babia-components.svg?style=flat-square)](https://npmjs.org/package/aframe-babia-components)
-[![License](http://img.shields.io/npm/l/aframe-babia-components.svg?style=flat-square)](https://npmjs.org/package/aframe-babia-components)
+This repository contains a WebVR research prototype for visualizing spending-habit pressure data. It compares how users analyze the same tasks across 2D, VR, AI-assisted, and non-AI conditions.
 
-Data visualization components for A-Frame.
+The project is built as a modified fork of BabiaXR `aframe-babia-components`, an A-Frame component library for browser-based 3D and VR data visualization.
 
-![example](https://i.imgur.com/CedRQs6.png)
+## Sample Video
 
-For [A-Frame](https://aframe.io).
+Paste your sample video link here after uploading it to GitHub, YouTube, OneDrive, Google Drive, or another video host:
 
-**Important**: The repository is hosted on [GitLab](https://gitlab.com/babiaxr/aframe-babia-components), if you are on GitHub, note that this is a mirror from the GitLab repository, if you want to open an [**issue**](https://gitlab.com/babiaxr/aframe-babia-components/-/issues), [**PR/MR**](https://gitlab.com/babiaxr/aframe-babia-components/-/merge_requests) or [**contribute**](https://gitlab.com/babiaxr/aframe-babia-components/-/blob/master/docs/CONTRIBUTING.md) to the project, please visit:
-- Repository: https://gitlab.com/babiaxr/aframe-babia-components
-- Release Notes: https://gitlab.com/babiaxr/aframe-babia-components/-/blob/master/docs/RELEASE_NOTES.md
-- Components webpage: https://babiaxr.gitlab.io/aframe-babia-components/
-- BabiaXR webpage: https://babiaxr.gitlab.io
-
-## Why
-
-Babia components are a set of components for data visualization, there are components for visualize, query and filter data.
-
-This pack of components has the aim of visualize data in several ways. There are separated components and each one has an independent aim:
-
-- `babiaxr-*` visualize the data prepared by a vismapper in several ways (this type of components must have in the same entity than a vismapper)
-- `babiaxr-querier_*` the aim of just query data and save it in the entity that it has
-- `babiaxr-filterdata` filter the data saved by one of the queriers
-- `babiaxr-ui` for dynamically changing the metrics that are visualized in one chart using a user interface.
-- And more!
-
-For instance:
-
-```html
-<a-entity babiaxr-3dbarchart='legend: true; x_axis: name; z_axis: age; height: size;
-    data:"[{"key":"David","key2":"2019","size":9},{"key":"David","key2":"2018","size":8},{"key":"David","key2":"2017","size":7},{"key":"David","key2":"2016","size":6},{"key":"David","key2":"2015","size":5},{"key":"Pete","key2":"2011","size":8},{"key":"Pete","key2":"2014","size":7},{"key":"Josh","key2":"2016","size":6},{"key":"Josh","key2":"2015","size":5},{"key":"Jesus","key2":"2016","size":9},{"key":"Jesus","key2":"2011","size":8},{"key":"Jesus","key2":"2014","size":7},{"key":"Jesus","key2":"2016","size":6},{"key":"Jesus","key2":"2015","size":5},{"key":"Jesus","key2":"2016","size":9},{"key":"Steve","key2":"2016","size":9},{"key":"Steve","key2":"2017","size":8},{"key":"Steve","key2":"2014","size":7},{"key":"Steve","key2":"2013","size":6},{"key":"Moreno","key2":"2015","size":5},{"key":"Jesus","key2":"2019","size":10},{"key":"Pete","key2":"2019","size":10}]"' 
-position="-10 0 0" rotation="0 0 0"></a-entity>
-
+```md
+[Watch the sample video](PASTE_VIDEO_URL_HERE)
 ```
 
-For using the querier/filters/mappers components (see [HOW_TO_CHARTS_WITH_QUERIER.md](./docs/tutorials/HOW_TO_CHARTS.md))
+Recommended GitHub workflow:
 
-```html
-<a-entity id="queriertest" babiaxr-querier_json="url: ./data.json;"></a-entity>
-<a-entity babiaxr-3dbarchart='from: queriertest; x_axis: name; z_axis: age; height: size; legend: true' position="-10 0 0" rotation="0 0 0"></a-entity>
+1. Upload the video through the GitHub README editor, an issue, or a release.
+2. Copy the generated video URL.
+3. Replace `PASTE_VIDEO_URL_HERE` above with that URL.
+
+Avoid committing large `.mp4` files directly to the repository.
+
+## Project Overview
+
+The custom study package compares four experimental conditions:
+
+| Condition | Environment | AI Support |
+| --- | --- | --- |
+| `2D + No AI` | Browser-based 2D visualization | No |
+| `2D + AI` | Browser-based 2D visualization | Yes |
+| `VR + No AI` | WebVR visualization | No |
+| `VR + AI` | WebVR visualization | Yes |
+
+All conditions use the same task definitions and reference answers from `examples/demos/ai_vr_pressure/study_tasks.json`.
+
+## Custom Contributions
+
+This repository extends the BabiaXR base with:
+
+- An AI + VR pressure-study demo under `examples/demos/ai_vr_pressure/`.
+- Four condition pages for 2D/VR and AI/non-AI comparison.
+- A point-cloud visualizer based on `babia-points`.
+- VR tri-view point clouds using PCA, UMAP, and GMM views.
+- 2D heatmap and scatter-style task interfaces.
+- Pressure, income, and blended color modes.
+- Occupation and city-tier filtering for participant analysis.
+- Participant answer logging and JSON export.
+- Research scoring utilities under `tools/research/`.
+
+## Relationship To BabiaXR
+
+This is not a clean-room project. It is a modified fork of:
+
+- Original project: https://gitlab.com/babiaxr/aframe-babia-components
+- BabiaXR website: https://babiaxr.gitlab.io/
+- Original package: https://www.npmjs.com/package/aframe-babia-components
+- License: GPL-3.0
+
+Most of the underlying A-Frame visualization framework comes from BabiaXR. The custom work in this repository focuses on the WebVR spending-habit pressure study, the experimental condition pages, the point-cloud extensions, and the research workflow around participant tasks and scoring.
+
+## Repository Structure
+
+```text
+components/
+  others/
+    babia-ui.js                 Custom UI changes on top of BabiaXR
+  visualizers/
+    babia-bubbles.js            Modified group visualization behavior
+    babia-points.js             Custom point-cloud visualizer
+
+examples/demos/ai_vr_pressure/
+  index.html                    Study launcher
+  condition_2d_no_ai.html       2D condition without AI support
+  condition_2d_ai.html          2D condition with AI support
+  condition_vr_no_ai.html       VR condition without AI support
+  condition_vr_ai.html          VR condition with AI support
+  study-common.js               Shared task, logging, and export logic
+  study-style.css               Shared study UI styling
+  study_tasks.json              Task definitions and answers
+  study_conditions.json         Condition metadata
+
+tools/research/
+  pressure_study_scoring.py     Participant log scoring script
 ```
 
+## Run Locally
 
+Install dependencies:
 
-
-## Usage
-
-#### Browser Installation
-
-Install and use by directly including the [browser files](dist):
-
-```html
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <title>A-Frame Babia components</title>
-    <script src="https://aframe.io/releases/1.0.1/aframe.min.js"></script>
-    <script src="https://unpkg.com/aframe-babia-components/dist/aframe-babia-components.min.js"></script>
-</head>
-
-<body>
-
-    <a-scene background="color: #A8F3FF" id="AframeScene">
-        
-        <a-entity babiaxr-3dbarchart='legend: true; 
-            data:"[{"key":"David","key2":"2019","size":9},{"key":"David","key2":"2018","size":8},{"key":"David","key2":"2017","size":7},{"key":"David","key2":"2016","size":6},{"key":"David","key2":"2015","size":5},{"key":"Pete","key2":"2011","size":8},{"key":"Pete","key2":"2014","size":7},{"key":"Josh","key2":"2016","size":6},{"key":"Josh","key2":"2015","size":5},{"key":"Jesus","key2":"2016","size":9},{"key":"Jesus","key2":"2011","size":8},{"key":"Jesus","key2":"2014","size":7},{"key":"Jesus","key2":"2016","size":6},{"key":"Jesus","key2":"2015","size":5},{"key":"Jesus","key2":"2016","size":9},{"key":"Steve","key2":"2016","size":9},{"key":"Steve","key2":"2017","size":8},{"key":"Steve","key2":"2014","size":7},{"key":"Steve","key2":"2013","size":6},{"key":"Moreno","key2":"2015","size":5},{"key":"Jesus","key2":"2019","size":10},{"key":"Pete","key2":"2019","size":10}]"' 
-        position="-10 0 0" rotation="0 0 0"></a-entity>
-
-        <a-entity id="queriertest" babiaxr-querier_json="url: ./data.json;"></a-entity>
-        <a-entity babiaxr-3dbarchart='from: queriertest; x_axis: name; z_axis: age; height: size; radius: size; legend: true' position="-10 0 0" rotation="0 0 0"></a-entity>
-
-        <a-entity camera position="0 0 0" look-controls></a-entity>
-        
-    </a-scene>
-</body>
+```powershell
+npm install
 ```
 
-#### NPM Installation
+Start the development server:
 
-Install via NPM:
-
-```
-npm i aframe-babia-components
+```powershell
+npm run dev -- --port 3000 --no-open
 ```
 
-Then require and use.
-```js
-require('aframe');
-require('aframe-babia-components');
+Open the study launcher:
 
-// or
-
-import 'aframe'
-import 'aframe-babia-components'
+```text
+http://127.0.0.1:3000/examples/demos/ai_vr_pressure/index.html
 ```
 
-## How to use this components
+## Participant Output
 
-The first step is to follow the Getting started guide, you can find it [here](https://babiaxr.gitlab.io/tutorials/get_started).
+Each condition page can export one local JSON log after a participant submits their answers. The log includes:
 
-Once finished, you can follow the other tutorials on the [main page](https://babiaxr.gitlab.io/tutorials/)!
+- Group-task answers.
+- Individual-task answers, including selected person IDs and evidence tags.
+- View usage, such as PCA or UMAP interaction.
+- Total duration.
+- Click counts.
 
+## Scoring
 
-## Building and Running BabiaXR, and/or Contributing Code
+Use the scoring helper with a participant submission JSON file:
 
-You might want to build BabiaXR locally to contribute some code, test out the latest features, or try out an open PR:
-
-- [CONTRIBUTING.md](./docs/CONTRIBUTING.md) will help you get BabiaXR up and running.
-
-
-## Querier components API
-
-Queriers are the components that query data from different data sources.
-
-[Go here to see the queriers API](./docs/APIs/QUERIERS.md).
-
-## Data management components API
-
-Data management components includes components for filtering data, transform data into a tree formar and others.
-
-[Go here to see the queriers API](./docs/APIs/DATAMANAGEMENT.md).
-
-## Charts components API
-
-Charts included:
-- Pie
-- Doughnut
-- 2D/3D bars
-- 2D/3D cylinders
-- Bubbles
-- Terrain
-
-[Go here to see the charts API](./docs/APIs/CHARTS.md).
-
-## Cities and Boats components API
-
-API for the city and boats visualizers components.
-
-[Go here to see the cities and boats API](./docs/APIs/CHARTS.md).
-
-## Other components API
-
-Other components:
-- UI (for changing metrics dynamically)
-- lookat component
-...
-
-[Go here to see the other components API](./docs/APIs/OTHERS.md).
-
-
-### Data model
-
-The dataset returned from the parsing of the `babia-query*` components must follow this model:
-
-```
-[
-    {
-        "metric": value0,
-        "metric2": value13,
-        "key": value,
-        ...
-    },
-    {
-        "metric": value2,
-        "metric2": value4
-        "key": value1,
-        ...
-
-    },
-    ...
-]
-
+```powershell
+python tools/research/pressure_study_scoring.py `
+  --study examples/demos/ai_vr_pressure/study_tasks.json `
+  --submission <participant_log.json>
 ```
 
-### Examples available at the "examples folder" and [here](https://babiaxr.gitlab.io/aframe-babia-components/)
+The script reports total score, maximum score, accuracy, score per minute, and task-by-task correctness.
+
+## Files Intentionally Excluded From GitHub
+
+The repository is configured to avoid uploading local research material and large artifacts such as:
+
+- `issues/`
+- `docs/plans/`
+- `babiaxr-issues22.tar`
+
+Keep raw reports, paper drafts, screenshots, archives, and large videos outside the Git history unless they are intentionally prepared for release.
+
+## License And Attribution
+
+This repository remains under the GPL-3.0 license because it is derived from BabiaXR `aframe-babia-components`.
+
+Original BabiaXR copyright and license terms are preserved in `LICENSE`. Any redistribution of this modified version should keep the GPL-3.0 license and clearly acknowledge the BabiaXR upstream project.
