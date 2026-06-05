@@ -9,7 +9,7 @@ The project is built as a modified fork of BabiaXR `aframe-babia-components`, an
 Paste your sample video link here after uploading it to GitHub, YouTube, OneDrive, Google Drive, or another video host:
 
 ```md
-[Watch the sample video](PASTE_VIDEO_URL_HERE)
+[Watch the sample video]([PASTE_VIDEO_URL_HERE](https://github.com/Sherlock55561/WebVR-with-spending-habit/releases/tag/demo-v1))
 ```
 
 Recommended GitHub workflow:
