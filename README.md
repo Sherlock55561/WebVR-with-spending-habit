@@ -8,7 +8,7 @@ The project is built as a modified fork of BabiaXR `aframe-babia-components`, an
 
 GitHub README pages do not reliably render a full video player. Use a clickable thumbnail image that opens the hosted video:
 
-[![Watch the sample video](l.png)](https://github.com/Sherlock55561/WebVR-with-spending-habit/releases/tag/demo-v1)
+[![Watch the sample video](assets/readme/l.png)](https://github.com/Sherlock55561/WebVR-with-spending-habit/releases/tag/demo-v1)
 
 To update this section later:
 
